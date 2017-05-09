@@ -10,6 +10,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "EVERNOTE_CONSUMER_KEY", (project.hasProperty('EVERNOTE_CONSUMER_KEY') ? "\"$EVERNOTE_CONSUMER_KEY\"" : "\"sergperez90\"")
+        buildConfigField "String", "EVERNOTE_CONSUMER_SECRET", (project.hasProperty('EVERNOTE_CONSUMER_SECRET') ? "\"$EVERNOTE_CONSUMER_SECRET\"" : "\"005d50fb45baa4b7\"")
+        buildConfigField "String", "EVERNOTE_DEVELOPER_KEY", (project.hasProperty('EVERNOTE_DEVELOPER_KEY') ? "\"$EVERNOTE_DEVELOPER_KEY\"" : "null")
+        buildConfigField "String", "EVERNOTE_NOTE_STORE_URL", (project.hasProperty('EVERNOTE_NOTE_STORE_URL') ? "\"$EVERNOTE_NOTE_STORE_URL\"" : "null")
     }
     buildTypes {
         release {
@@ -21,6 +26,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.evernote:android-sdk:2.0.0-RC4'
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
