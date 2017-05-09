@@ -7,3 +7,9 @@ dependencies {
     compile 'com.evernote:android-sdk:2.0.0-RC4'
 }
 ```
+
+Añadimos las claves publicas y privadas a gradle.properties
+```
+EVERNOTE_CONSUMER_KEY= Your consumer key
+EVERNOTE_CONSUMER_SECRET= Your private key
+```
