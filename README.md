@@ -16,7 +16,8 @@ Añadimos las claves publicas y privadas a gradle.properties
 EVERNOTE_CONSUMER_KEY= Your consumer key
 EVERNOTE_CONSUMER_SECRET= Your private key
 ```
-Creamos una clase que será de tipo Aplication (App.java), dentro de la clase creamos las variables de nuestras claves de acceso y el sandbox que nos permitira hacer login
+###App.java
+Creamos una clase que será de tipo Aplication, dentro de la clase creamos las variables de nuestras claves de acceso y el sandbox que nos permitira hacer login
 ```
 private static final String CONSUMER_KEY = "Your consumer key";
 private static final String CONSUMER_SECRET = "Your private key";
