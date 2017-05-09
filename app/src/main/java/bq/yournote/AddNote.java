@@ -47,6 +47,7 @@ public class AddNote extends AppCompatActivity {
         });
     }
 
+    //Metodo para crear una nota
     public void crearNota(String tit, String cont){
         if (!EvernoteSession.getInstance().isLoggedIn()) {
             return;
@@ -61,11 +62,8 @@ public class AddNote extends AppCompatActivity {
             noteStoreClient.createNoteAsync(note, new EvernoteCallback<Note>() {
                 @Override
                 public void onSuccess(Note result) {
-                    Snackbar snackbar = Snackbar
-                            .make(relativeLayout, "Nota creada con éxito", Snackbar.LENGTH_LONG);
-
-                    snackbar.show();
-
+                    Toast.makeText(getApplicationContext(), "Nota creada con éxito", Toast.LENGTH_LONG).show();
+                    finish();
                 }
 
                 @Override

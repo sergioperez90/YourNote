@@ -110,8 +110,8 @@ public class MainActivity extends AppCompatActivity
                     namesList.add(notebook.getName());
                 }
 
-                String notebookNames = TextUtils.join(", ", namesList);
-                Toast.makeText(getApplicationContext(), notebookNames, Toast.LENGTH_LONG).show();
+                //String notebookNames = TextUtils.join(", ", namesList);
+                //Toast.makeText(getApplicationContext(), notebookNames, Toast.LENGTH_LONG).show();
             }
 
             @Override
