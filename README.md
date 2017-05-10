@@ -96,3 +96,60 @@ Una vez hecho lo anterior esta clase nos resultara bastante facil. Lo primero qu
 </android.support.design.widget.CoordinatorLayout>
 ```
 
+**AddNote.java**
+
+Iniciamos los EditText y el boton en el metodo onCreate
+```
+FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        relativeLayout = (RelativeLayout) findViewById(R.id
+                .content_add_note);
+
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                titulo = (EditText)findViewById(R.id.titulo);
+                contenido = (EditText)findViewById(R.id.contenido);
+                crearNota(titulo.getText().toString(), contenido.getText().toString());
+            }
+        });
+        
+```
+Como podeis observar cuando hagamos click en el boton llamaremos al metodo de crearNota, donde le pasaremos los campos del titulo y del contenido por parametro. Vamos a ver como seria el metodo crearNota
+
+```
+public void crearNota(String tit, String cont){
+        if (!EvernoteSession.getInstance().isLoggedIn()) {
+            return;
+        }
+        if(!tit.isEmpty() && !cont.isEmpty()){ //Si los campos no estan vacios creo la nota
+            EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
+
+            //Creamos la nota y le asignamos el titulo y el contenido
+            Note note = new Note();
+            note.setTitle(tit);
+            note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX);
+
+            noteStoreClient.createNoteAsync(note, new EvernoteCallback<Note>() {
+                @Override
+                public void onSuccess(Note result) {
+                    Toast.makeText(getApplicationContext(), "Nota creada con éxito", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+
+                @Override
+                public void onException(Exception exception) {
+                    Log.e("ERROR", "Error al crear la nota", exception);
+                }
+            });
+        }else{
+            Snackbar snackbar = Snackbar
+                    .make(relativeLayout, "No puedes dejar los campos vacios", Snackbar.LENGTH_LONG);
+
+            snackbar.show();
+        }
+
+
+    }
+```
