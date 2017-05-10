@@ -33,3 +33,15 @@ new EvernoteSession.Builder(this)
                 .build(consumerKey, consumerSecret)
                 .asSingleton();
 ```
+### ComprobarLogin.java
+
+En esta clase lo que vamos a hacer es comprobar el login, si se ha iniciado sesion anteriormente o no, para ello creamos el añadimos el siguiente metodo.
+
+```
+if (!EvernoteSession.getInstance().isLoggedIn() && !isIgnored(activity)) {
+            mCachedIntent = activity.getIntent();
+            LoginActivity.launch(activity);
+
+            activity.finish();
+        }
+ ```
