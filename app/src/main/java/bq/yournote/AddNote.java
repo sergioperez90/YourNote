@@ -38,8 +38,7 @@ public class AddNote extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
+
                 titulo = (EditText)findViewById(R.id.titulo);
                 contenido = (EditText)findViewById(R.id.contenido);
                 crearNota(titulo.getText().toString(), contenido.getText().toString());
@@ -55,6 +54,7 @@ public class AddNote extends AppCompatActivity {
         if(!tit.isEmpty() && !cont.isEmpty()){ //Si los campos no estan vacios creo la nota
             EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
 
+            //Creamos la nota y le asignamos el titulo y el contenido
             Note note = new Note();
             note.setTitle(tit);
             note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX);

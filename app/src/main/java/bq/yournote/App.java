@@ -13,7 +13,7 @@ public class App extends Application {
 
     private static final String CONSUMER_KEY = "sergperez90";
     private static final String CONSUMER_SECRET = "005d50fb45baa4b7";
-    private static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.SANDBOX;
+    private static final EvernoteSession.EvernoteService EVERNOTE_SERVICE = EvernoteSession.EvernoteService.PRODUCTION;
 
     private static final boolean SUPPORT_APP_LINKED_NOTEBOOKS = true;
 

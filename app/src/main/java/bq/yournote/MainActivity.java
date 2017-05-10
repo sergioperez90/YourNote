@@ -1,5 +1,6 @@
 package bq.yournote;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -96,6 +97,11 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_order_fecha) {
 
+        } else if(id == R.id.nav_logout){
+            EvernoteSession.getInstance().logOut();
+            finish();
+            Intent i = new Intent(getBaseContext(), LoginActivity.class);
+            startActivity(i);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
