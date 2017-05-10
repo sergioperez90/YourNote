@@ -45,3 +45,10 @@ if (!EvernoteSession.getInstance().isLoggedIn() && !isIgnored(activity)) {
             activity.finish();
         }
  ```
+
+### LoginActivity.java
+
+Aqui lo que realizaremos sera llamar a EvernoteSession para que nos abra la pantalla de login de Evernote. Podemos añadirlo dentro de un boton o iniciarlo automaticamente.
+```
+EvernoteSession.getInstance().authenticate(LoginActivity.this);
+```
