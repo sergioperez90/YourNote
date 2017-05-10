@@ -1,12 +1,9 @@
 package bq.yournote;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -16,32 +13,31 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.EditText;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.evernote.client.android.EvernoteSession;
-import com.evernote.client.android.EvernoteUtil;
-import com.evernote.client.android.asyncclient.EvernoteCallback;
 import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
 import com.evernote.edam.error.EDAMNotFoundException;
 import com.evernote.edam.error.EDAMSystemException;
 import com.evernote.edam.error.EDAMUserException;
 import com.evernote.edam.notestore.NoteFilter;
 import com.evernote.edam.notestore.NoteList;
-import com.evernote.edam.notestore.NoteMetadata;
-import com.evernote.edam.notestore.NotesMetadataList;
 import com.evernote.edam.notestore.NotesMetadataResultSpec;
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.NoteSortOrder;
 
 
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private ListView listaNotas;
+    private String [] notas;
+    private ArrayAdapter<String> adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +55,19 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        listaNotas = (ListView)findViewById(R.id.lista);
+
+        listaNotas.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                int item = position;
+                String itemval = (String)listaNotas.getItemAtPosition(position);
+                Toast.makeText(getApplicationContext(), "Position: "+ item+" - Valor: "+itemval, Toast.LENGTH_LONG).show();
+            }
+
+        });
+
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -71,8 +80,12 @@ public class MainActivity extends AppCompatActivity
         //Con esto solucionamos los exceptions
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        cargarNotas();
 
+
+
+        //Cargamos el listado de las notas
+        ListNotes adapterList = new ListNotes(this, listaNotas, "UPDATED");
+        adapterList.execute();
 
     }
 
@@ -94,8 +107,12 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_order_nombre) {
+            ListNotes adapterList = new ListNotes(this, listaNotas, "TITLE");
+            adapterList.execute();
 
         } else if (id == R.id.nav_order_fecha) {
+            ListNotes adapterList = new ListNotes(this, listaNotas, "UPDATED");
+            adapterList.execute();
 
         } else if(id == R.id.nav_logout){
             EvernoteSession.getInstance().logOut();
@@ -109,35 +126,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    //Metodo que va a cargar las notas del usuario
-    private void cargarNotas(){
 
-        if (!EvernoteSession.getInstance().isLoggedIn()) {
-            return;
-        }
-
-        NoteFilter filter = new NoteFilter();
-        filter.setOrder(NoteSortOrder.UPDATED.getValue());
-        NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
-        spec.setIncludeTitle(true);
-
-        final EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
-        try {
-
-            NoteList notes = noteStoreClient.findNotes(filter, 0, 10);
-            List<Note> noteList = notes.getNotes();
-            for (Note note : noteList) {
-                //Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
-                //fullNote.getContent();
-                System.out.println(note.getTitle());
-            }
-        }
-        catch (EDAMUserException e) {}
-        catch (EDAMSystemException e) {}
-        catch (EDAMNotFoundException e){}
-        catch (Exception e){Log.e("Error", "Exception: " + e.getMessage());}
-
-    }
 
 
 }
