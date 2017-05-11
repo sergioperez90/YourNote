@@ -386,3 +386,63 @@ Llamamos al adaptador que nos va a cargar las notas *listNotes* le pasamos la li
  
 ## Detalle de la nota
 
+Aqui lo que vamos a hacer es ver el detalle de la nota, el formato del contenido de la nota de Evernote nos lo dan en HTML, aunque como en el adaptador *ListCont* ya lo hemos contemplado aqui no tendremos que volver a realizar nada.
+
+### activity_detail_note.xml
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_detail_note"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    tools:context="bq.yournote.DetailNote">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/contenido_html" />
+    </ScrollView>
+</RelativeLayout>
+```
+
+Aquí simplemente tendremos que añadir un TextView para visualizar el contenido y tiene que estar dentro de un ScrollView por si el contenido es mas largo de lo esperado.
+
+### DetailNote.java
+
+Aqui lo primero que tendremos que hacer sera recojer lo del intent pasado del MainActivity, que seran el titulo y el guid.
+Ademas tendremos que llamar al controlador *ListCont* para que nos carge el contenido de forma asincrona.
+
+```
+public class DetailNote extends AppCompatActivity {
+    private ListCont listCont;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_detail_note);
+
+        //Recojemos el contenido
+        Intent i = getIntent();
+        String titulo = i.getStringExtra("titulo");
+        String guid = i.getStringExtra("guid");
+
+        //Cambiamos el titulo
+        getSupportActionBar().setTitle(titulo);
+
+        TextView contenidoHtml = (TextView) findViewById(R.id.contenido_html);
+        listCont = new ListCont(this, contenidoHtml, guid);
+        listCont.execute();
+
+    }
+
+}
+```
