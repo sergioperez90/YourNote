@@ -378,8 +378,9 @@ listaNotas = (ListView)findViewById(R.id.lista);
 
             }
 
-        });
-  ```
+        });
+```
+
 Podeis ver que dentro del metodo onItemClick tenemos que recojer el titulo de la nota para mostrarlo en la Toolbar y el guid para poder buscar el contenido completo de la nota, lo enviamos al otro activity mediante los intents.
  
  
