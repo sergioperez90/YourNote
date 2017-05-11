@@ -16,6 +16,8 @@ Añadimos las claves publicas y privadas a gradle.properties
 EVERNOTE_CONSUMER_KEY= Your consumer key
 EVERNOTE_CONSUMER_SECRET= Your private key
 ```
+## Login
+
 ### App.java
 
 Creamos una clase que será de tipo Aplication, dentro de la clase creamos las variables de nuestras claves de acceso y el sandbox que nos permitira hacer login, si lo queremos en modo preproduccion tenemos que indicarlo en el **EVERNOTE_SERVICE** que seria **EvernoteSession.EvernoteService.SANDBOX**, yo lo voy a dejar en modo produccion (Se recomienda modo pre-produccion hasta que la app este finalizada)
@@ -52,6 +54,8 @@ Aqui lo que realizaremos sera llamar a EvernoteSession para que nos abra la pant
 ```
 EvernoteSession.getInstance().authenticate(LoginActivity.this);
 ```
+
+## Crear Nota
 
 ### AddNote.java / activity_add_note.xml
 
@@ -154,3 +158,5 @@ public void crearNota(String tit, String cont){
     }
 ```
 Se puede observar es que tenemos que comprobar primero es que la sesion se haya iniciado. Una vez comprobado comprobaremos que los campos no esten vacios, si no estan vacios ya crearemos la nota y le asignaremos los campos de titulo y contenido que recibimos por parametro *note.setTitle(tit) y note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX); Ademas podemos crear un Snackbar para que nos confirme que la nota se ha creado con exito.
+
+## Mostrar listado de notas
