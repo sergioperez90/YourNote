@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,21 +15,11 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.evernote.client.android.EvernoteSession;
-import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
-import com.evernote.edam.error.EDAMNotFoundException;
-import com.evernote.edam.error.EDAMSystemException;
-import com.evernote.edam.error.EDAMUserException;
-import com.evernote.edam.notestore.NoteFilter;
-import com.evernote.edam.notestore.NoteList;
-import com.evernote.edam.notestore.NotesMetadataResultSpec;
-import com.evernote.edam.type.Note;
-import com.evernote.edam.type.NoteSortOrder;
 
+import bq.yournote.Adapters.ListNotes;
 
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -38,6 +27,7 @@ public class MainActivity extends AppCompatActivity
     private ListView listaNotas;
     private String [] notas;
     private ArrayAdapter<String> adapter;
+    private ListNotes listNotes;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,12 +47,19 @@ public class MainActivity extends AppCompatActivity
 
         listaNotas = (ListView)findViewById(R.id.lista);
 
+        //Cargamos el listado de las notas
+        listNotes = new ListNotes(this, listaNotas, "UPDATED");
+        listNotes.execute();
+
         listaNotas.setOnItemClickListener(new AdapterView.OnItemClickListener(){
 
             public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                int item = position;
                 String itemval = (String)listaNotas.getItemAtPosition(position);
-                Toast.makeText(getApplicationContext(), "Position: "+ item+" - Valor: "+itemval, Toast.LENGTH_LONG).show();
+                Intent i = new Intent(getBaseContext(), DetailNote.class);
+                i.putExtra("titulo", listNotes.getTituloNotas(position));
+                i.putExtra("guid", listNotes.getGuidNotas(position));
+                startActivity(i);
+
             }
 
         });
@@ -83,9 +80,6 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        //Cargamos el listado de las notas
-        ListNotes adapterList = new ListNotes(this, listaNotas, "UPDATED");
-        adapterList.execute();
 
     }
 
@@ -107,12 +101,12 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_order_nombre) {
-            ListNotes adapterList = new ListNotes(this, listaNotas, "TITLE");
-            adapterList.execute();
+            listNotes = new ListNotes(this, listaNotas, "TITLE");
+            listNotes.execute();
 
         } else if (id == R.id.nav_order_fecha) {
-            ListNotes adapterList = new ListNotes(this, listaNotas, "UPDATED");
-            adapterList.execute();
+            listNotes = new ListNotes(this, listaNotas, "UPDATED");
+            listNotes.execute();
 
         } else if(id == R.id.nav_logout){
             EvernoteSession.getInstance().logOut();

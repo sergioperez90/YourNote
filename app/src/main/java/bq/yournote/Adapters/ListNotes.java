@@ -1,4 +1,4 @@
-package bq.yournote;
+package bq.yournote.Adapters;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -21,6 +21,8 @@ import com.evernote.edam.type.NoteSortOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import bq.yournote.R;
+
 /**
  * Created by sergio on 11/5/17.
  */
@@ -32,14 +34,16 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
     ProgressDialog pDialog;
     ArrayAdapter<String> adapter;
     ListView listaNotas;
-    ArrayList<String> notas;
+    ArrayList<String> tituloNotas;
+    ArrayList<String> guidNotas;
     String ordenar;
 
 
     public ListNotes(Context context, ListView listaNotas, String ordenar){
         this.context = context;
         this.listaNotas = listaNotas;
-        notas = new ArrayList<String>();
+        tituloNotas = new ArrayList<String>();
+        guidNotas = new ArrayList<String>();
         this.ordenar = ordenar;
     }
 
@@ -57,7 +61,7 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
     protected ArrayAdapter<String> doInBackground(Void... arg0) {
 
         cargarNotas();
-        adapter = new ArrayAdapter<String>(context, R.layout.lista_simple, R.id.lista_text, notas);
+        adapter = new ArrayAdapter<String>(context, R.layout.lista_simple, R.id.lista_text, tituloNotas);
         return adapter;
     }
 
@@ -93,9 +97,11 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
             NoteList notes = noteStoreClient.findNotes(filter, 0, 10);
             List<Note> noteList = notes.getNotes();
             for (Note note : noteList) {
-                //Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
-                //fullNote.getContent();
-                notas.add(note.getTitle());
+                /*Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
+                fullNote.getContent();
+                contNotas.add(fullNote.getContent()); //Cargamos el contenido de la nota*/
+                guidNotas.add(note.getGuid());
+                tituloNotas.add(note.getTitle()); //Cargamos el titulo de la nota
             }
         }
         catch (EDAMUserException e) {}
@@ -104,5 +110,14 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
         catch (Exception e){
             Log.e("Error", "Exception: " + e.getMessage());}
 
+    }
+
+    public String getTituloNotas(int i){
+        return tituloNotas.get(i);
+    }
+
+    //Develovemos el guid para mas tarde cargar el contenido
+    public String getGuidNotas(int i){
+        return guidNotas.get(i);
     }
 }
