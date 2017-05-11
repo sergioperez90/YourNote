@@ -250,3 +250,4 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
     }
 }
 ```
+Como podemos observar el metodo **cargarNotas()** es el que realmente nos va a cargar las notas, lo primero que debemos hacer para poder acceder a ellas es crear una variable de tipo *EvernoteNoteStoreClient* con ella accederemos a todas las notas que tiene almacenadas el usuario en Evernote. Una vez hecho esto creamos una lista de notas *NoteList notes = noteStoreClient.findNotes(filter, 0, 100)* donde el filtro sera por que queremos ordenarlo y el 100 seran el numero maximo de notas que queremos cargar, en nuestro caso recorremos la lista de notas y ahora ya podemos ir almacenando los titulos de las notas en un array, los titulos se obtienen con el metodo *getTitle()*.
