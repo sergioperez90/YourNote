@@ -20,4 +20,5 @@
         completions."
     </string>
     <string name="title_activity_add_note">AddNote</string>
+    <string name="title_activity_paint">Paint</string>
 </resources>

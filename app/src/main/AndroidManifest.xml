@@ -33,14 +33,21 @@
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:parentActivityName=".MainActivity"
             android:name=".AddNote"
             android:label="@string/title_activity_add_note"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".DetailNote"
-            android:parentActivityName= ".MainActivity">
-
-        </activity>
+        <activity
+            android:name=".DetailNote"
+            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:parentActivityName=".DetailNote"
+            android:name=".Canvas.PaintActivity"
+            android:label="@string/title_activity_paint"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <meta-data
+            android:name="com.google.android.gms.vision.DEPENDENCIES"
+            android:value="ocr"/>
     </application>
 
 </manifest>

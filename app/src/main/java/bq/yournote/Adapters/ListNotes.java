@@ -52,7 +52,7 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
         super.onPreExecute();
         pDialog = new ProgressDialog(context);
         pDialog.setMessage("Cargando Notas");
-        pDialog.setCancelable(true);
+        pDialog.setCancelable(false);
         pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pDialog.show();
     }

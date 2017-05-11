@@ -47,7 +47,7 @@ public class ListCont extends AsyncTask<Void, Void, String> {
         super.onPreExecute();
         pDialog = new ProgressDialog(context);
         pDialog.setMessage("Cargando Contenido");
-        pDialog.setCancelable(true);
+        pDialog.setCancelable(false);
         pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pDialog.show();
     }
