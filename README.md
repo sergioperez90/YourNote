@@ -167,8 +167,8 @@ Lo primero que vamos a realizar para mostrar el listado de notas es crear una cl
 
 public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
 
-
-    public ListNotes(Context context, ListView listaNotas, String ordenar){
+```
+    public ListNotes(Context context, ListView listaNotas, String ordenar){
         this.context = context;
         this.listaNotas = listaNotas;
         tituloNotas = new ArrayList<String>();
@@ -250,3 +250,4 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
         return guidNotas.get(i);
     }
 }
+```
