@@ -330,9 +330,9 @@ public class ListCont extends AsyncTask<Void, Void, String> {
 
 Podemos observar que el metodo que realmente nos carga el contenido es el de *cargarContenido* hacemos lo mismo que en el anterior pero ahora debemos crear una FullNote que nos devolvera la nota completa. *Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false)*. Una vez se ha cargado el contenido de la nota en el postExecute lo asignaremos al TextView de la siguiente manera *contenidoHtml.setText(Html.fromHtml(result))*
 
-## MainActivity.java / content_main.xml
+### MainActivity.java / content_main.xml
 
-### content_main.xml
+#### content_main.xml
 
 Aqui lo que vamos a añadir es un listView para poder cargar el listado de las notas
 
@@ -357,7 +357,7 @@ Aqui lo que vamos a añadir es un listView para poder cargar el listado de las n
 </RelativeLayout>
 ```
 
-### MainActivity.java
+#### MainActivity.java
 
 En el onCreate tendremos que inicializar el listView y es donde accederemos al detalle de la nota
 
