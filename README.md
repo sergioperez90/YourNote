@@ -164,10 +164,9 @@ Se puede observar es que tenemos que comprobar primero es que la sesion se haya 
 Lo primero que vamos a realizar para mostrar el listado de notas es crear una clase asincrona que la llamaremos ListNotes.java.
 
 ### ListNotes.java
-
+```
 public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
 
-```
     public ListNotes(Context context, ListView listaNotas, String ordenar){
         this.context = context;
         this.listaNotas = listaNotas;
