@@ -384,3 +384,5 @@ listaNotas = (ListView)findViewById(R.id.lista);
 Llamamos al adaptador que nos va a cargar las notas *listNotes* le pasamos la lista y el tipo de orden, ademas podeis ver que dentro del metodo onItemClick tenemos que recojer el titulo de la nota para mostrarlo en la Toolbar y el guid para poder buscar el contenido completo de la nota, lo enviamos al otro activity mediante los intents.
  
  
+## Detalle de la nota
+
