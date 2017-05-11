@@ -29,6 +29,7 @@ import bq.yournote.R;
  * Created by sergio on 11/5/17.
  */
 
+//Clase que nos permitira cargar el contenido de la nota
 public class ListCont extends AsyncTask<Void, Void, String> {
     ProgressDialog pDialog;
     TextView contenidoHtml;
@@ -61,7 +62,7 @@ public class ListCont extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
-        contenidoHtml.setText(Html.fromHtml(result));
+        contenidoHtml.setText(Html.fromHtml(result)); //Añadimos el contenido al textView
         pDialog.dismiss();
     }
 
@@ -80,8 +81,7 @@ public class ListCont extends AsyncTask<Void, Void, String> {
 
         final EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
         try {
-
-            NoteList notes = noteStoreClient.findNotes(filter, 0, 10);
+            NoteList notes = noteStoreClient.findNotes(filter, 0, 100);
             List<Note> noteList = notes.getNotes();
             for (Note note : noteList) {
                 if(note.getGuid().equals(guid)){

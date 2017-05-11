@@ -52,7 +52,7 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
         super.onPreExecute();
         pDialog = new ProgressDialog(context);
         pDialog.setMessage("Cargando Notas");
-        pDialog.setCancelable(false);
+        pDialog.setCancelable(true);
         pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pDialog.show();
     }
@@ -80,7 +80,7 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
         }
 
         NoteFilter filter = new NoteFilter();
-        //Ordenamos por fecha de creacion o edicion
+        //Ordenamos por fecha de creacion o edicion ya que la propia api nos proporciona ya los metodos para ordenar
         if(ordenar.equalsIgnoreCase("UPDATED")){
             filter.setOrder(NoteSortOrder.UPDATED.getValue());
         }else if(ordenar.equalsIgnoreCase("TITLE")){ //Ordenamos por titulo ascendente de A a Z
@@ -94,12 +94,9 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
         final EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
         try {
 
-            NoteList notes = noteStoreClient.findNotes(filter, 0, 10);
+            NoteList notes = noteStoreClient.findNotes(filter, 0, 100);
             List<Note> noteList = notes.getNotes();
             for (Note note : noteList) {
-                /*Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
-                fullNote.getContent();
-                contNotas.add(fullNote.getContent()); //Cargamos el contenido de la nota*/
                 guidNotas.add(note.getGuid());
                 tituloNotas.add(note.getTitle()); //Cargamos el titulo de la nota
             }
@@ -112,6 +109,7 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
 
     }
 
+    //Devolvemos el titulo de la nota para usarlo en el detalle de la nota
     public String getTituloNotas(int i){
         return tituloNotas.get(i);
     }
