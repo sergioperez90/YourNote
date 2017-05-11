@@ -329,3 +329,57 @@ public class ListCont extends AsyncTask<Void, Void, String> {
 ```
 
 Podemos observar que el metodo que realmente nos carga el contenido es el de *cargarContenido* hacemos lo mismo que en el anterior pero ahora debemos crear una FullNote que nos devolvera la nota completa. *Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false)*. Una vez se ha cargado el contenido de la nota en el postExecute lo asignaremos al TextView de la siguiente manera *contenidoHtml.setText(Html.fromHtml(result))*
+
+## MainActivity.java / content_main.xml
+
+### content_main.xml
+
+Aqui lo que vamos a añadir es un listView para poder cargar el listado de las notas
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="bq.yournote.MainActivity"
+    tools:showIn="@layout/app_bar_main">
+
+    <ListView
+        android:id="@+id/lista"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>
+```
+
+### MainActivity.java
+
+En el onCreate tendremos que inicializar el listView y es donde accederemos al detalle de la nota
+
+```
+listaNotas = (ListView)findViewById(R.id.lista);
+
+        //Cargamos el listado de las notas
+        listNotes = new ListNotes(this, listaNotas, "UPDATED");
+        listNotes.execute();
+
+        listaNotas.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                Intent i = new Intent(getBaseContext(), DetailNote.class);
+                i.putExtra("titulo", listNotes.getTituloNotas(position));
+                i.putExtra("guid", listNotes.getGuidNotas(position));
+                startActivity(i);
+
+            }
+
+        });
+  ```
+Podeis ver que dentro del metodo onItemClick tenemos que recojer el titulo de la nota para mostrarlo en la Toolbar y el guid para poder buscar el contenido completo de la nota, lo enviamos al otro activity mediante los intents.
+ 
+ 
