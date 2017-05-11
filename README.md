@@ -327,3 +327,5 @@ public class ListCont extends AsyncTask<Void, Void, String> {
     }
 }
 ```
+
+Podemos observar que el metodo que realmente nos carga el contenido es el de *cargarContenido* hacemos lo mismo que en el anterior pero ahora debemos crear una FullNote que nos devolvera la nota completa. *Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false)*. Una vez se ha cargado el contenido de la nota en el postExecute lo asignaremos al TextView de la siguiente manera *contenidoHtml.setText(Html.fromHtml(result))*
