@@ -160,3 +160,93 @@ public void crearNota(String tit, String cont){
 Se puede observar es que tenemos que comprobar primero es que la sesion se haya iniciado. Una vez comprobado comprobaremos que los campos no esten vacios, si no estan vacios ya crearemos la nota y le asignaremos los campos de titulo y contenido que recibimos por parametro *note.setTitle(tit) y note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX); Ademas podemos crear un Snackbar para que nos confirme que la nota se ha creado con exito.
 
 ## Mostrar listado de notas
+
+Lo primero que vamos a realizar para mostrar el listado de notas es crear una clase asincrona que la llamaremos ListNotes.java.
+
+### ListNotes.java
+
+public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
+
+
+    public ListNotes(Context context, ListView listaNotas, String ordenar){
+        this.context = context;
+        this.listaNotas = listaNotas;
+        tituloNotas = new ArrayList<String>();
+        guidNotas = new ArrayList<String>();
+        this.ordenar = ordenar;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        pDialog = new ProgressDialog(context);
+        pDialog.setMessage("Cargando Notas");
+        pDialog.setCancelable(false);
+        pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        pDialog.show();
+    }
+
+    @Override
+    protected ArrayAdapter<String> doInBackground(Void... arg0) {
+
+        cargarNotas();
+        adapter = new ArrayAdapter<String>(context, R.layout.lista_simple, R.id.lista_text, tituloNotas);
+        return adapter;
+    }
+
+    @Override
+    protected void onPostExecute(ArrayAdapter<String> result) {
+        super.onPostExecute(result);
+        listaNotas.setAdapter(result);
+        pDialog.dismiss();
+    }
+
+    //Metodo que va a cargar las notas del usuario
+    private void cargarNotas(){
+
+        if (!EvernoteSession.getInstance().isLoggedIn()) {
+            return;
+        }
+
+        NoteFilter filter = new NoteFilter();
+        //Ordenamos por fecha de creacion o edicion
+        if(ordenar.equalsIgnoreCase("UPDATED")){
+            filter.setOrder(NoteSortOrder.UPDATED.getValue());
+        }else if(ordenar.equalsIgnoreCase("TITLE")){ //Ordenamos por titulo ascendente de A a Z
+            filter.setOrder(NoteSortOrder.TITLE.getValue());
+            filter.setAscending(true);
+        }
+
+        NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
+        spec.setIncludeTitle(true);
+
+        final EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
+        try {
+
+            NoteList notes = noteStoreClient.findNotes(filter, 0, 10);
+            List<Note> noteList = notes.getNotes();
+            for (Note note : noteList) {
+                /*Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
+                fullNote.getContent();
+                contNotas.add(fullNote.getContent()); //Cargamos el contenido de la nota*/
+                guidNotas.add(note.getGuid());
+                tituloNotas.add(note.getTitle()); //Cargamos el titulo de la nota
+            }
+        }
+        catch (EDAMUserException e) {}
+        catch (EDAMSystemException e) {}
+        catch (EDAMNotFoundException e){}
+        catch (Exception e){
+            Log.e("Error", "Exception: " + e.getMessage());}
+
+    }
+
+    public String getTituloNotas(int i){
+        return tituloNotas.get(i);
+    }
+
+    //Develovemos el guid para mas tarde cargar el contenido
+    public String getGuidNotas(int i){
+        return guidNotas.get(i);
+    }
+}
