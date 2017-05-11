@@ -161,7 +161,7 @@ Se puede observar es que tenemos que comprobar primero es que la sesion se haya 
 
 ## Mostrar listado de notas
 
-Lo primero que vamos a realizar para mostrar el listado de notas es crear una clase asincrona que la llamaremos ListNotes.java.
+Lo primero que vamos a realizar para mostrar el listado de notas es crear una clase asincrona que nos va a cargar los titulos de las notas en el listView que crearemos posteriormente en el mainActivity. 
 
 ### ListNotes.java
 ```
@@ -254,3 +254,76 @@ Como podemos observar el metodo **cargarNotas()** es el que realmente nos va a c
 
 ### ListCont.java
 
+Ahora vamos a crear una clase tambien asincrona que nos va a cargar el contenido de la nota cuando pulsemos en el item del listView, como el contenido esta en HTML podemos añadirlo mediante una funcion del TextView.
+
+```
+public class ListCont extends AsyncTask<Void, Void, String> {
+    ProgressDialog pDialog;
+    TextView contenidoHtml;
+    String html;
+    String guid;
+    Context context;
+
+    public ListCont(Context context, TextView contenidoHtml, String guid){
+        this.contenidoHtml = contenidoHtml;
+        this.guid = guid;
+        this.context = context;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        pDialog = new ProgressDialog(context);
+        pDialog.setMessage("Cargando Contenido");
+        pDialog.setCancelable(false);
+        pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        pDialog.show();
+    }
+
+    @Override
+    protected String doInBackground(Void... arg0) {
+        cargarContenido();
+        return html;
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+        contenidoHtml.setText(Html.fromHtml(result));
+        pDialog.dismiss();
+    }
+
+    private void cargarContenido(){
+
+        if (!EvernoteSession.getInstance().isLoggedIn()) {
+            return;
+        }
+
+        NoteFilter filter = new NoteFilter();
+        filter.setOrder(NoteSortOrder.UPDATED.getValue());
+
+
+        NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
+        spec.setIncludeTitle(true);
+
+        final EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
+        try {
+
+            NoteList notes = noteStoreClient.findNotes(filter, 0, 100);
+            List<Note> noteList = notes.getNotes();
+            for (Note note : noteList) {
+                if(note.getGuid().equals(guid)){
+                    Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
+                    html = fullNote.getContent();
+                }
+            }
+        }
+        catch (EDAMUserException e) {}
+        catch (EDAMSystemException e) {}
+        catch (EDAMNotFoundException e){}
+        catch (Exception e){
+            Log.e("Error", "Exception: " + e.getMessage());}
+
+    }
+}
+```
