@@ -1,4 +1,4 @@
-package bq.yournote;
+package bq.yournote.Activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,6 +9,8 @@ import android.widget.Button;
 
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.login.EvernoteLoginFragment;
+
+import bq.yournote.R;
 
 public class LoginActivity extends AppCompatActivity implements EvernoteLoginFragment.ResultCallback {
     public static void launch(Activity activity) {

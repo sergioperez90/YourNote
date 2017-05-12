@@ -30,18 +30,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activities.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".AddNote"
+            android:name=".Activities.AddNote"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".DetailNote"
+            android:name=".Activities.DetailNote"
             android:parentActivityName=".MainActivity"></activity>
         <activity
-            android:parentActivityName=".DetailNote"
-            android:name=".Canvas.PaintActivity"
+            android:parentActivityName="Activities.DetailNote"
+            android:name=".Activities.PaintActivity"
             android:label="@string/title_activity_paint"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <meta-data

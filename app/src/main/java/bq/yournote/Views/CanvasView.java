@@ -1,4 +1,4 @@
-package bq.yournote.Canvas;
+package bq.yournote.Views;
 
 import android.content.Context;
 import android.graphics.Bitmap;

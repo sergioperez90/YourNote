@@ -18,6 +18,9 @@ import android.widget.ListView;
 
 import com.evernote.client.android.EvernoteSession;
 
+import bq.yournote.Activities.AddNote;
+import bq.yournote.Activities.DetailNote;
+import bq.yournote.Activities.LoginActivity;
 import bq.yournote.Adapters.ListNotes;
 
 

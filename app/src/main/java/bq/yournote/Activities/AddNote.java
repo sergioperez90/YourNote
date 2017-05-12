@@ -1,4 +1,4 @@
-package bq.yournote;
+package bq.yournote.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,7 +21,11 @@ import com.evernote.client.android.asyncclient.EvernoteCallback;
 import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
 import com.evernote.edam.type.Note;
 
-import bq.yournote.Canvas.PaintActivity;
+import bq.yournote.Activities.PaintActivity;
+
+import bq.yournote.MainActivity;
+import bq.yournote.R;
+
 
 public class AddNote extends AppCompatActivity {
 

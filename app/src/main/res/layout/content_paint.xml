@@ -7,10 +7,10 @@
     android:layout_height="match_parent"
     android:background="#fff"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="bq.yournote.Canvas.PaintActivity"
+    tools:context="bq.yournote.Activities.PaintActivity"
     tools:showIn="@layout/activity_paint">
 
-    <bq.yournote.Canvas.CanvasView
+    <bq.yournote.Views.CanvasView
         android:id="@+id/canvas"
         android:layout_width="match_parent"
         android:layout_height="250dp" />

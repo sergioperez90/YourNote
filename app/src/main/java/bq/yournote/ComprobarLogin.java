@@ -17,6 +17,8 @@ import com.evernote.client.android.login.EvernoteLoginActivity;
 import java.util.Arrays;
 import java.util.List;
 
+import bq.yournote.Activities.LoginActivity;
+
 public class ComprobarLogin implements Application.ActivityLifecycleCallbacks {
 
 

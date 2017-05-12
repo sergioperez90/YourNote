@@ -1,11 +1,7 @@
-package bq.yournote.Canvas;
+package bq.yournote.Activities;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,17 +9,13 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.ImageView;
-import android.graphics.Color;
-import android.graphics.Path;
-import android.graphics.Paint;
 import android.widget.TextView;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
-import org.w3c.dom.Text;
-
+import bq.yournote.Views.CanvasView;
 import bq.yournote.R;
 
 public class PaintActivity extends AppCompatActivity {
