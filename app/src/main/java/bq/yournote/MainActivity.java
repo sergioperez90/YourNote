@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity
         listaNotas.setOnItemClickListener(new AdapterView.OnItemClickListener(){
 
             public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                String itemval = (String)listaNotas.getItemAtPosition(position);
                 Intent i = new Intent(getBaseContext(), DetailNote.class);
                 i.putExtra("titulo", listNotes.getTituloNotas(position));
                 i.putExtra("guid", listNotes.getGuidNotas(position));

@@ -5,9 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
 import com.evernote.edam.error.EDAMNotFoundException;

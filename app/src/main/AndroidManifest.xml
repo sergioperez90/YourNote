@@ -34,7 +34,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AddNote"
-            android:label="@string/title_activity_add_note"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

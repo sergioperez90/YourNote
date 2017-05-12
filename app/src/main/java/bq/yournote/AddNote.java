@@ -87,7 +87,6 @@ public class AddNote extends AppCompatActivity {
             snackbar.show();
         }
 
-
     }
 
     @Override

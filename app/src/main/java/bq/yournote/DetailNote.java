@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import bq.yournote.Adapters.ListCont;
+import bq.yournote.R;
 
 public class DetailNote extends AppCompatActivity {
     private ListCont listCont;
@@ -28,9 +29,6 @@ public class DetailNote extends AppCompatActivity {
         TextView contenidoHtml = (TextView) findViewById(R.id.contenido_html);
         listCont = new ListCont(this, contenidoHtml, guid);
         listCont.execute();
-        //Anyadimos el contenido en formato html
-        //contenidoHtml.setText(Html.fromHtml(contenido));
-
     }
 
 }

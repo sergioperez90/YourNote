@@ -3,6 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/new_paint"
         android:icon="@drawable/ic_border_color_white_24dp"
-        android:title="Añadir"
+        android:title="Pintar"
         app:showAsAction="always" />
 </menu>
