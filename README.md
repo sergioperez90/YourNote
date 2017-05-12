@@ -1,5 +1,4 @@
 # Your Note
-<img src="https://media.giphy.com/media/VmSDsU6fISReo/giphy.gif" /> <img src="https://media.giphy.com/media/zeXfNi8UYCCMU/giphy.gif" /> <img src="https://media.giphy.com/media/xhLuzsfDMw9ck/giphy.gif" />
 
 
 Creación de una APP que permite ver y crear notas desde la API de Evernote.
@@ -19,6 +18,8 @@ EVERNOTE_CONSUMER_KEY= Your consumer key
 EVERNOTE_CONSUMER_SECRET= Your private key
 ```
 ## Login
+
+<img src="https://media.giphy.com/media/VmSDsU6fISReo/giphy.gif" />
 
 ### App.java
 
@@ -58,6 +59,8 @@ EvernoteSession.getInstance().authenticate(LoginActivity.this);
 ```
 
 ## Crear Nota
+
+<img src="https://media.giphy.com/media/xhLuzsfDMw9ck/giphy.gif" />
 
 ### AddNote.java / activity_add_note.xml
 
@@ -162,6 +165,8 @@ public void crearNota(String tit, String cont){
 Se puede observar es que tenemos que comprobar primero es que la sesion se haya iniciado. Una vez comprobado comprobaremos que los campos no esten vacios, si no estan vacios ya crearemos la nota y le asignaremos los campos de titulo y contenido que recibimos por parametro *note.setTitle(tit) y note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX); Ademas podemos crear un Snackbar para que nos confirme que la nota se ha creado con exito.
 
 ## Mostrar listado de notas
+
+<img src="https://media.giphy.com/media/zeXfNi8UYCCMU/giphy.gif" />
 
 Lo primero que vamos a realizar para mostrar el listado de notas es crear una clase asincrona que nos va a cargar los titulos de las notas en el listView que crearemos posteriormente en el mainActivity. 
 
