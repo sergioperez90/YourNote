@@ -5,11 +5,11 @@ Creación de una APP que permite ver y crear notas desde la API de Evernote. Las
 ## Índice
 
 <ul>
-<li><a href="#creación-api-key-de-evernote">Creación API Key de Evernote</a>
-<li><a href="#login">Login</a>
-<li><a href="#">Crear Nota</a>
-<li><a href="#">Listar Notas</a>
-<li><a href="#">Crear Notas</a>
+<li><a href="#creación-api-key-de-evernote">Creación API Key de Evernote</a></li>
+<li><a href="#login">Login</a></li>
+<li><a href="#">Configuracion SQLite</a></li>
+<li><a href="#">Listar Notas</a></li>
+<li><a href="#">Crear Nota</a></li>
 </ul>
 
 
