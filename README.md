@@ -8,8 +8,8 @@ Creación de una APP que permite ver y crear notas desde la API de Evernote. Las
 <li><a href="#creación-api-key-de-evernote">Creación API Key de Evernote</a></li>
 <li><a href="#login">Login</a></li>
 <li><a href="#configuración-sqlite">Configuracion SQLite</a></li>
-<li><a href="#">Listar Notas</a></li>
-<li><a href="#crear-nota">Crear Nota</a></li>
+<li><a href="#listar-notas">Listar Notas</a></li>
+<li><a href="#crear-notas">Crear Notas</a></li>
 </ul>
 
 
@@ -162,6 +162,8 @@ public class AdminSQLite extends SQLiteOpenHelper {
 
 Creamos tambien un adaptador para poder hacer consultas a la base de datos. Crearemos los metodos de create y select, no haremos update ya que no vamos a modificar la nota, crearemos un metodo delete aunque tampoco lo usaremos. Ademas tendremos un metodo que nos permitira comprobar a la hora de actualizar si los campos ya existen, con esto evitaremos duplicados. Creamos ademas el ArrayList de tipo Nota que le devolveremos a **ListNotes.java**.
 
+### AdapterSQLite.java
+
 ```
 public class AdapterSQLite {
     private AdminSQLite admin;
@@ -253,11 +255,61 @@ public class AdapterSQLite {
 ```
 ## Listar Notas
 
+### ListNotes.java
+
 Esta posiblemente sea la parte mas larga de todas, pero con esto practicamente tendremos ya media APP realizada.
+Lo primero a realizar sera crear una clase adaptador que nos carge las notas de forma asincrona y las carge en un listView.
+Aqui tendremos varios puntos en cuenta, es decir, si es la **primera vez** que iniciamos la APP haremos la primera copia a SQLite, **la segunda vez o mas** ya no haremos la llamada a la API para no colapsar la aplicacion, la otra condicion es que si **actualizamos** ahi volveremos a hacer la llamada. Ademas tambien tenemos que tener en cuenta el orden, ya que vamos a poder ordenar por fecha de creacion/actualizacion o por el titulo.
+
+Este seria el metodo de **CargarNotas()** que lo llamaremos desde el metodo doInBackground
+
+```
+private void cargarNotas(){
+
+        if (!EvernoteSession.getInstance().isLoggedIn()) {
+            return;
+        }
+
+        NoteFilter filter = new NoteFilter();
+        filter.setOrder(NoteSortOrder.UPDATED.getValue());
+
+        NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
+        spec.setIncludeTitle(true);
+
+        final EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
+        try {
+            //Si es la primera vez que ejecutamos la app conectamos con el servidor
+            if(pref.equalsIgnoreCase("Primera_vez") || pref.equalsIgnoreCase("Actualizar")) {
+                NoteList notes = noteStoreClient.findNotes(filter, 0, 100);
+                List<Note> noteList = notes.getNotes();
+                for (Note note : noteList) {
+                    Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
+                    sqlAdapter.create(note.getGuid(), note.getTitle(), fullNote.getContent(), fullNote.getUpdateSequenceNum()); //Añadimos a la base de datos
+                }
+            }
+
+            //Cargamos la lista desde la base de datos SQLite
+            if(pref.equalsIgnoreCase("Primera_vez") || pref.equalsIgnoreCase("Otra_vez") || pref.equalsIgnoreCase("Actualizar")){
+                int size = sqlAdapter.selectAll(ordenar).size();
+                for(int i = 0; i < size; i++){
+                    tituloNotas.add(sqlAdapter.selectAll(ordenar).get(i).getTitulo());
+                    guidNotas.add(sqlAdapter.selectAll(ordenar).get(i).getGuid());
+                    contNotas.add(sqlAdapter.selectAll(ordenar).get(i).getContenido());
+                    fechaNotas.add(sqlAdapter.selectAll(ordenar).get(i).getFecha());
+                }
+            }
 
 
+        }
+        catch (EDAMUserException e) {}
+        catch (EDAMSystemException e) {}
+        catch (EDAMNotFoundException e){}
+        catch (Exception e){
+            Log.e("Error", "Exception: " + e.getMessage());}
+```
 
-## Crear Nota
+
+## Crear Notas
 
 ### AddNote.java / activity_add_note.xml
 
