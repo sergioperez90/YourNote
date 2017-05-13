@@ -1,7 +1,9 @@
 # Your Note
 
+Creación de una APP que permite ver y crear notas desde la API de Evernote. Las notas se cargaran en local la primera vez, mediante SQLite, y asi no sera necesario hacer peticiones a la API de evernote cada vez, ademas si no tenemos conexion a internet podremos acceder a nuestras notas con la ultima sincronizacion realizada. Se podra actualizar de forma manual la sincronizacion con la API de evernote siempre que tengamos una conexion a internet.
 
-Creación de una APP que permite ver y crear notas desde la API de Evernote.
+## Creacion API Key
+
 Lo primero a realizar es obtener nuestras API keys para poder utilizar la API de evernote https://dev.evernote.com/
 Cuando se crea la API key por primera vez cabe recordar que estamos en modo **pre-produccion** por lo que las notas creadas solo se podran crear a los usuarios de prueba registrados en el sandBox de Evernote https://sandbox.evernote.com/. Para que se puedan crear las notas en la cuenta real hay que ponerse en contacto con https://dev.evernote.com/support/ y decirles que nos la activen a modo produccion, **cabe recordar que esta APP esta en modo PRODUCCION**
 
@@ -258,84 +260,6 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
 }
 ```
 Como podemos observar el metodo **cargarNotas()** es el que realmente nos va a cargar las notas, lo primero que debemos hacer para poder acceder a ellas es crear una variable de tipo *EvernoteNoteStoreClient* con ella accederemos a todas las notas que tiene almacenadas el usuario en Evernote. Una vez hecho esto creamos una lista de notas *NoteList notes = noteStoreClient.findNotes(filter, 0, 100)* donde el filtro sera por que queremos ordenarlo y el 100 seran el numero maximo de notas que queremos cargar, en nuestro caso recorremos la lista de notas y ahora ya podemos ir almacenando los titulos de las notas en un array, los titulos se obtienen con el metodo *getTitle()*. Debemos crear un metodo que nos devuelva el guid de la nota, ya que luego nos hara falta para cargar el contenido de la nota.
-
-### ListCont.java
-
-Ahora vamos a crear una clase tambien asincrona que nos va a cargar el contenido de la nota cuando pulsemos en el item del listView, como el contenido esta en HTML podemos añadirlo mediante una funcion del TextView.
-
-```
-public class ListCont extends AsyncTask<Void, Void, String> {
-    ProgressDialog pDialog;
-    TextView contenidoHtml;
-    String html;
-    String guid;
-    Context context;
-
-    public ListCont(Context context, TextView contenidoHtml, String guid){
-        this.contenidoHtml = contenidoHtml;
-        this.guid = guid;
-        this.context = context;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        pDialog = new ProgressDialog(context);
-        pDialog.setMessage("Cargando Contenido");
-        pDialog.setCancelable(false);
-        pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        pDialog.show();
-    }
-
-    @Override
-    protected String doInBackground(Void... arg0) {
-        cargarContenido();
-        return html;
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
-        super.onPostExecute(result);
-        contenidoHtml.setText(Html.fromHtml(result));
-        pDialog.dismiss();
-    }
-
-    private void cargarContenido(){
-
-        if (!EvernoteSession.getInstance().isLoggedIn()) {
-            return;
-        }
-
-        NoteFilter filter = new NoteFilter();
-        filter.setOrder(NoteSortOrder.UPDATED.getValue());
-
-
-        NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
-        spec.setIncludeTitle(true);
-
-        final EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
-        try {
-
-            NoteList notes = noteStoreClient.findNotes(filter, 0, 100);
-            List<Note> noteList = notes.getNotes();
-            for (Note note : noteList) {
-                if(note.getGuid().equals(guid)){
-                    Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
-                    html = fullNote.getContent();
-                }
-            }
-        }
-        catch (EDAMUserException e) {}
-        catch (EDAMSystemException e) {}
-        catch (EDAMNotFoundException e){}
-        catch (Exception e){
-            Log.e("Error", "Exception: " + e.getMessage());}
-
-    }
-}
-```
-
-Podemos observar que el metodo que realmente nos carga el contenido es el de *cargarContenido* hacemos lo mismo que en el anterior pero ahora debemos crear una FullNote que nos devolvera la nota completa. *Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false)*. Una vez se ha cargado el contenido de la nota en el postExecute lo asignaremos al TextView de la siguiente manera *contenidoHtml.setText(Html.fromHtml(result))*
 
 ### MainActivity.java / content_main.xml
 
