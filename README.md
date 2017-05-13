@@ -308,6 +308,74 @@ private void cargarNotas(){
     }
 ```
 
+### MainActivity.java
+
+En el main principal pongo tendremos que hacer ya, ya que todo el resto del codigo esta distribuido en las otras clases y adaptadores. Simplemente tendremos que llamar al adaptador **ListNotes.java**. La llamaremos desde el metodo del activity onResume(). Aqui tendremos que controlar si es la primera vez o no, para pasarle los parametros a la clase ListNotes.
+
+```
+ @Override
+    protected void onResume() {
+        super.onResume();
+        //Cargamos el listado de las notas solo la primera vez llamamos al servidor
+        if (settings.getBoolean("firstrun", true)) {
+            Log.d("Preferencias: ", "Mi primera vez");
+            ordenar = "UPDATED";
+            listNotes = new ListNotes(this, listaNotas, ordenar, "Primera_vez");
+            listNotes.execute();
+            // Lo cambiamos a false para que no vuelva a ejecutarlo
+            settings.edit().putBoolean("firstrun", false).commit();
+        }else{
+            ordenar = "UPDATED";
+            listNotes = new ListNotes(this, listaNotas, ordenar, "Otra_vez");
+            listNotes.execute();
+
+            Log.d("Preferencias: ", "Mi segunda vez");
+
+        }
+
+    }
+ ```
+Ademas en la toolbar crearemos un boton de actualizar y así cada vez que pulsemos sobre el se actualizaran las notas desde la API de evernote. Creamos el xml del menu.
+
+### menu_main.xml
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/actualizar"
+        android:icon="@drawable/ic_refresh_white_24dp"
+        android:title="Actualizar"
+        app:showAsAction="always" />
+</menu>
+```
+
+Y lo llamamos en el MainActivty, donde tendremos que controlar que vamos a actualizar.
+
+```
+@Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.actualizar) {
+            //COMPROBAMOS LA CONEXION A INTERNET
+            if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                    connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+                        listNotes = new ListNotes(this, listaNotas, ordenar, "Actualizar");
+                        listNotes.execute();
+            }else{
+                Snackbar snackbar = Snackbar
+                        .make(relativeLayout, "Comprueba tu conexión a Internet", Snackbar.LENGTH_LONG);
+                snackbar.show();
+            }
+        }
+
+        return true;
+
+
+   }
+```
 
 ## Crear Notas
 
