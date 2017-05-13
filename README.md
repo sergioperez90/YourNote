@@ -9,7 +9,7 @@ Creación de una APP que permite ver y crear notas desde la API de Evernote. Las
 <li><a href="#login">Login</a></li>
 <li><a href="#">Configuracion SQLite</a></li>
 <li><a href="#">Listar Notas</a></li>
-<li><a href="#">Crear Nota</a></li>
+<li><a href="#crear-nota">Crear Nota</a></li>
 </ul>
 
 
@@ -118,7 +118,7 @@ Una vez hecho lo anterior esta clase nos resultara bastante mas facil. Lo primer
 
 **AddNote.java**
 
-Iniciamos los EditText y el boton en el metodo onCreate, ademas comprobaremos la conexion a internet antes de poder crear una nota ya que si no tenemos conexion no nos la podra crear, esto en un futuro se puede guardar en local hasta que vuelva la conexion y enviar a la API la nota.
+Iniciamos los EditText y el boton en el metodo onCreate, ademas comprobaremos la conexion a internet antes de poder crear una nota ya que si no tenemos conexion nos avisara de que no estamos conectados y no la creara, esto en un futuro se puede guardar en local hasta que vuelva la conexion y enviar a la API la nota.
 
 ```
 FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -183,4 +183,195 @@ public void crearNota(String tit, String cont){
     }
 ```
 Se puede observar es que tenemos que comprobar primero es que la sesion se haya iniciado. Una vez comprobado comprobaremos que los campos no esten vacios, si no estan vacios ya crearemos la nota y le asignaremos los campos de titulo y contenido que recibimos por parametro *note.setTitle(tit) y note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX); 
+
+## Configuración SQLite
+
+Vamos a configurar SQLite para almacenar las notas en local y asi si no tenemos conexion a internet podemos seguir visualizandolas y a la hora de cargar el contenido de la nota sera mucho mas rapido, ya que no tendremos que estar haciendo constantes llamada a la API de Evernote.
+
+Lo primero que vamos a realizar es crear la clase **Nota** para poder crear el objeto de tipo Nota. La usaremos mas adelante.
+
+### Nota.java
+```
+public class Nota {
+    private String guid;
+    private String titulo;
+    private String contenido;
+    private int fecha;
+
+    public Nota(String guid, String titulo, String contenido, int fecha){
+        this.guid = guid;
+        this.titulo = titulo;
+        this.contenido = contenido;
+        this.fecha = fecha;
+    }
+
+    public String getGuid(){
+        return this.guid;
+    }
+
+    public String getTitulo(){
+        return this.titulo;
+    }
+
+    public String getContenido(){
+        return this.contenido;
+    }
+
+    public int getFecha(){ return this.fecha; }
+
+    public void setGuid(String guid){
+        this.guid = guid;
+    }
+
+    public void setTitulo(String titulo){
+        this.titulo = titulo;
+    }
+
+    public void setContenido(String contenido){
+        this.contenido = contenido;
+    }
+    
+    public void setFecha(int fecha){
+        this.fecha = fecha;
+    }
+}
+```
+
+### AdminSQLite.java
+
+Ahora vamos a crear la administracion de SQLite, ahi es donde crearemos la base de datos y la unica tabla que vamos a tener.
+En la tabla notas guardaremos los campos guid, titulo, contenido y fecha.
+```
+public class AdminSQLite extends SQLiteOpenHelper {
+
+    public AdminSQLite(Context context, String nombre, SQLiteDatabase.CursorFactory factory, int version) {
+
+        super(context, nombre, factory, version);
+
+    }
+
+    @Override
+
+    public void onCreate(SQLiteDatabase db) {
+
+        //aquí creamos la tabla de notas (text guid, text titulo, text contenido, integer fecha)
+        db.execSQL("create table notas(_id integer primary key autoincrement, guid text, titulo text, contenido text, fecha integer)");
+
+    }
+
+    @Override
+
+    public void onUpgrade(SQLiteDatabase db, int version1, int version2) {
+
+        //db.execSQL("drop table if exists notas");
+
+        //db.execSQL("create table notas(_id integer primary key autoincrement, guid text, titulo text, contenido text)");
+
+    }
+
+
+}
+```
+
+Creamos tambien un adaptador para poder hacer consultas a la base de datos. Crearemos los metodos de create y select, no haremos update ya que no vamos a modificar la nota, crearemos un metodo delete aunque tampoco lo usaremos. Ademas tendremos un metodo que nos permitira comprobar a la hora de actualizar si los campos ya existen, con esto evitaremos duplicados. Creamos ademas el ArrayList de tipo Nota que le devolveremos a **ListNotes.java**.
+
+```
+public class AdapterSQLite {
+    private AdminSQLite admin;
+    private Context context;
+    private ArrayList<Nota> notas;
+    private Nota nota;
+
+    public AdapterSQLite (Context context){
+        this.context = context;
+        admin = new AdminSQLite(this.context, "evernote", null, 1);
+        notas =  new ArrayList<Nota>();
+    }
+
+    public void select(String guid){
+        SQLiteDatabase db = admin.getWritableDatabase();
+
+        Cursor fila = db.rawQuery("select guid, titulo, contenido, fecha from notas where guid = '"+ guid+"'", null);
+        if(fila.moveToFirst()){
+            System.out.println("Encontrado: " + fila.getCount() + "-" + fila.getString(0) + " - " + fila.getString(1) + " - " + fila.getString(2));
+        }else{
+            System.out.println("No existe");
+        }
+        db.close();
+    }
+
+    public void delete(String guid){
+        SQLiteDatabase db = admin.getWritableDatabase();
+        db.delete("notas", "guid='"+guid+"'", null);
+
+        db.close();
+    }
+
+    public void create(String guid, String titulo, String contenido, int fecha){
+        SQLiteDatabase db = admin.getWritableDatabase();
+            ContentValues registro = new ContentValues();
+            registro.put("guid", guid);
+            registro.put("titulo", titulo);
+            registro.put("contenido", contenido);
+            registro.put("fecha", fecha);
+
+        if(!comprobar(guid)){
+            db.insert("notas", null, registro);
+            Log.e("NOTA","insertada correctamente");
+        }else{
+            Log.e("NOTA","la nota ya existe");
+        }
+
+        db.close();
+
+    }
+
+    public boolean comprobar(String guid){
+        SQLiteDatabase db = admin.getWritableDatabase();
+        boolean res = false;
+        Cursor fila = db.rawQuery("select * from notas where guid = '"+ guid+"'", null);
+        if(fila.getCount() > 0){
+            res = true;
+        }
+        return res;
+    }
+
+    public ArrayList<Nota> selectAll(String ordenar){
+        SQLiteDatabase db = admin.getWritableDatabase();
+        Cursor fila = null;
+
+        if(ordenar.equalsIgnoreCase("TITLE")){
+            fila = db.rawQuery("select guid, titulo, contenido, fecha from notas order by titulo asc", null);
+        }else if(ordenar.equalsIgnoreCase("UPDATED")){
+            fila = db.rawQuery("select guid, titulo, contenido, fecha from notas order by fecha desc", null);
+        }
+
+
+        if (fila.moveToFirst()) {
+            while (fila.isAfterLast() == false) {
+                String guid = fila.getString(fila.getColumnIndex("guid"));
+                String titulo = fila.getString(fila.getColumnIndex("titulo"));
+                String contenido = fila.getString(fila.getColumnIndex("contenido"));
+                int fecha = fila.getColumnIndex("fecha");
+                nota = new Nota(guid, titulo, contenido, fecha); // Creo la nota
+                notas.add(nota); // La añado al ArrayList
+                fila.moveToNext();
+            }
+        }
+        db.close();
+        return notas;
+    }
+
+}
+```
+
+
+
+
+
+
+
+
+
+
 
