@@ -21,8 +21,6 @@ import com.evernote.client.android.asyncclient.EvernoteCallback;
 import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
 import com.evernote.edam.type.Note;
 
-import bq.yournote.Activities.PaintActivity;
-
 import bq.yournote.MainActivity;
 import bq.yournote.R;
 
@@ -96,7 +94,7 @@ public class AddNote extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
+        inflater.inflate(R.menu.menu_add, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

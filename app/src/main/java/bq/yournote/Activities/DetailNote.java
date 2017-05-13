@@ -21,14 +21,15 @@ public class DetailNote extends AppCompatActivity {
         //Recojemos el contenido
         Intent i = getIntent();
         String titulo = i.getStringExtra("titulo");
-        String guid = i.getStringExtra("guid");
+        String contenido = i.getStringExtra("contenido");
 
         //Cambiamos el titulo
         getSupportActionBar().setTitle(titulo);
 
         TextView contenidoHtml = (TextView) findViewById(R.id.contenido_html);
-        listCont = new ListCont(this, contenidoHtml, guid);
-        listCont.execute();
+        contenidoHtml.setText(Html.fromHtml(contenido)); //Añadimos el contenido al textView
+        /*listCont = new ListCont(this, contenidoHtml, guid);
+        listCont.execute();*/
     }
 
 }

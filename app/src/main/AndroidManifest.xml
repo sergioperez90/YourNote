@@ -40,7 +40,7 @@
             android:name=".Activities.DetailNote"
             android:parentActivityName=".MainActivity"></activity>
         <activity
-            android:parentActivityName="Activities.DetailNote"
+            android:parentActivityName=".Activities.DetailNote"
             android:name=".Activities.PaintActivity"
             android:label="@string/title_activity_paint"
             android:theme="@style/AppTheme.NoActionBar"></activity>

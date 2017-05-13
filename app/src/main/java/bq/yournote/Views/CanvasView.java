@@ -41,20 +41,26 @@ public class CanvasView extends View {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeWidth(8f);
+
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh){
         super.onSizeChanged(w, h, oldw, oldh);
-
         mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
+
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawPath(mPath, mPaint);
+        //Pintamos sobre el canvas
+        mCanvas.drawPath(mPath,  mPaint);
+
+        //Pintamos el bitmap
+        canvas.drawBitmap(mBitmap, 0, 0, mPaint);
     }
 
     private void startTouch(float x, float y){

@@ -1,9 +1,13 @@
 package bq.yournote.Adapters;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -18,6 +22,7 @@ import com.evernote.edam.notestore.NotesMetadataResultSpec;
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.NoteSortOrder;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,21 +35,28 @@ import bq.yournote.R;
 //Clase asyncrona para cargar las notas
 public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
 
-    Context context;
-    ProgressDialog pDialog;
-    ArrayAdapter<String> adapter;
-    ListView listaNotas;
-    ArrayList<String> tituloNotas;
-    ArrayList<String> guidNotas;
-    String ordenar;
+    private Context context;
+    private ProgressDialog pDialog;
+    private ArrayAdapter<String> adapter;
+    private ListView listaNotas;
+    private ArrayList<String> tituloNotas;
+    private ArrayList<String> guidNotas;
+    private ArrayList<String> contNotas;
+    private ArrayList<Integer> fechaNotas;
+    private String ordenar;
+    private AdapterSQLite sqlAdapter;
+    private String pref;
 
-
-    public ListNotes(Context context, ListView listaNotas, String ordenar){
+    public ListNotes(Context context, ListView listaNotas, String ordenar, String pref){
         this.context = context;
         this.listaNotas = listaNotas;
         tituloNotas = new ArrayList<String>();
         guidNotas = new ArrayList<String>();
+        contNotas = new ArrayList<String>();
+        fechaNotas = new ArrayList<Integer>();
         this.ordenar = ordenar;
+        sqlAdapter = new AdapterSQLite(this.context);
+        this.pref = pref;
     }
 
     @Override
@@ -52,14 +64,13 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
         super.onPreExecute();
         pDialog = new ProgressDialog(context);
         pDialog.setMessage("Cargando Notas");
-        pDialog.setCancelable(true);
+        pDialog.setCancelable(false);
         pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pDialog.show();
     }
 
     @Override
     protected ArrayAdapter<String> doInBackground(Void... arg0) {
-
         cargarNotas();
         adapter = new ArrayAdapter<String>(context, R.layout.lista_simple, R.id.lista_text, tituloNotas);
         return adapter;
@@ -80,26 +91,37 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
         }
 
         NoteFilter filter = new NoteFilter();
-        //Ordenamos por fecha de creacion o edicion ya que la propia api nos proporciona ya los metodos para ordenar
-        if(ordenar.equalsIgnoreCase("UPDATED")){
-            filter.setOrder(NoteSortOrder.UPDATED.getValue());
-        }else if(ordenar.equalsIgnoreCase("TITLE")){ //Ordenamos por titulo ascendente de A a Z
-            filter.setOrder(NoteSortOrder.TITLE.getValue());
-            filter.setAscending(true);
-        }
+        filter.setOrder(NoteSortOrder.UPDATED.getValue());
 
         NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
         spec.setIncludeTitle(true);
 
         final EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
         try {
+            //Si es la primera vez que ejecutamos la app conectamos con el servidor
+            if(pref.equalsIgnoreCase("Primera_vez") || pref.equalsIgnoreCase("Actualizar")) {
+                NoteList notes = noteStoreClient.findNotes(filter, 0, 100);
+                List<Note> noteList = notes.getNotes();
+                for (Note note : noteList) {
+                    Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
+                    sqlAdapter.create(note.getGuid(), note.getTitle(), fullNote.getContent(), fullNote.getUpdateSequenceNum()); //Añadimos a la base de datos
 
-            NoteList notes = noteStoreClient.findNotes(filter, 0, 100);
-            List<Note> noteList = notes.getNotes();
-            for (Note note : noteList) {
-                guidNotas.add(note.getGuid());
-                tituloNotas.add(note.getTitle()); //Cargamos el titulo de la nota
+                    System.out.println("Nota: "+fullNote.getTitle() +" - "+fullNote.getUpdateSequenceNum());
+                }
             }
+
+            //Cargamos la lista desde la base de datos SQLite
+            if(pref.equalsIgnoreCase("Primera_vez") || pref.equalsIgnoreCase("Otra_vez") || pref.equalsIgnoreCase("Actualizar")){
+                int size = sqlAdapter.selectAll(ordenar).size();
+                for(int i = 0; i < size; i++){
+                    tituloNotas.add(sqlAdapter.selectAll(ordenar).get(i).getTitulo());
+                    guidNotas.add(sqlAdapter.selectAll(ordenar).get(i).getGuid());
+                    contNotas.add(sqlAdapter.selectAll(ordenar).get(i).getContenido());
+                    fechaNotas.add(sqlAdapter.selectAll(ordenar).get(i).getFecha());
+                }
+            }
+
+
         }
         catch (EDAMUserException e) {}
         catch (EDAMSystemException e) {}
@@ -108,6 +130,7 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
             Log.e("Error", "Exception: " + e.getMessage());}
 
     }
+
 
     //Devolvemos el titulo de la nota para usarlo en el detalle de la nota
     public String getTituloNotas(int i){
@@ -118,4 +141,8 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
     public String getGuidNotas(int i){
         return guidNotas.get(i);
     }
+
+    //Devolvemos el contenido
+    public String getContNotas(int i) { return contNotas.get(i);}
+
 }

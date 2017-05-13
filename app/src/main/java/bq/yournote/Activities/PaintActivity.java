@@ -1,6 +1,8 @@
 package bq.yournote.Activities;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
+
 
 import bq.yournote.Views.CanvasView;
 import bq.yournote.R;
@@ -43,7 +46,9 @@ public class PaintActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 imageView.setImageBitmap(canvasView.getmBitmap());
-                Bitmap bitmap = canvasView.getmBitmap();
+                //imageView.setImageResource(R.drawable.sergio);
+
+                Bitmap bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
 
                 //Con el siguiente codigo podemos pasar de bitmap a texto
                 TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
@@ -53,6 +58,7 @@ public class PaintActivity extends AppCompatActivity {
                     Frame frame = new Frame.Builder().setBitmap(bitmap).build();
                     SparseArray<TextBlock> items = textRecognizer.detect(frame);
                     StringBuilder stringBuilder = new StringBuilder();
+                    System.out.println("Tam: "+items.size());
                     for(int i=0;i<items.size();++i)
                     {
                         TextBlock item = items.valueAt(i);
