@@ -1,6 +1,18 @@
 # Your Note
 
+## Introducción
+
 Creación de una APP que permite ver y crear notas desde la API de Evernote. Las notas se cargarán en local la primera vez, mediante SQLite, y asi no sera necesario hacer peticiones a la API de evernote cada vez, ademas si no tenemos conexion a internet podremos acceder a nuestras notas con la ultima sincronizacion realizada. Se podra actualizar de forma manual la sincronizacion con la API de evernote siempre que tengamos una conexion a internet.
+
+### Requisitos mínimos y versión de compilación de este proyecto
+<ul>
+    <li>compileSdkVersion 25</li>
+    <li>buildToolsVersion "25.0.2"</li>
+    <li>minSdkVersion 19</li>
+    <li>targetSdkVersion 25</li>
+</ul>
+
+*Se ha testeado en varias versiones de android anteriores a la 7.0, incluida la 4.4 y 5.0.*
 
 ## Índice
 
