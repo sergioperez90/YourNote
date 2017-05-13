@@ -7,7 +7,7 @@ Creación de una APP que permite ver y crear notas desde la API de Evernote. Las
 <ul>
 <li><a href="#creación-api-key-de-evernote">Creación API Key de Evernote</a></li>
 <li><a href="#login">Login</a></li>
-<li><a href="#">Configuracion SQLite</a></li>
+<li><a href="#configuración-sqlite">Configuracion SQLite</a></li>
 <li><a href="#">Listar Notas</a></li>
 <li><a href="#crear-nota">Crear Nota</a></li>
 </ul>
@@ -70,119 +70,6 @@ Aqui lo que realizaremos sera llamar a EvernoteSession para que nos abra la pant
 ```
 EvernoteSession.getInstance().authenticate(LoginActivity.this);
 ```
-
-## Crear Nota
-
-### AddNote.java / activity_add_note.xml
-
-Una vez hecho lo anterior esta clase nos resultara bastante mas facil. Lo primero que debemos hacer es crearnos los campos donde introduciremos el nombre de la nota y el contenido mediante EditText, también tendremos que crear un boton para enviar la nota a Evernote
-
-**activity_add_note.xml**
-
-```
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="bq.yournote.AddNote">
-
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/content_add_note" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
-
-</android.support.design.widget.CoordinatorLayout>
-```
-
-**AddNote.java**
-
-Iniciamos los EditText y el boton en el metodo onCreate, ademas comprobaremos la conexion a internet antes de poder crear una nota ya que si no tenemos conexion nos avisara de que no estamos conectados y no la creara, esto en un futuro se puede guardar en local hasta que vuelva la conexion y enviar a la API la nota.
-
-```
-FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        relativeLayout = (RelativeLayout) findViewById(R.id
-                .content_add_note);
-
-        connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //COMPROBAMOS LA CONEXION A INTERNET
-                if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                        connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
-                            titulo = (EditText) findViewById(R.id.titulo);
-                            contenido = (EditText) findViewById(R.id.contenido);
-                            crearNota(titulo.getText().toString(), contenido.getText().toString());
-                }else{
-                    Snackbar snackbar = Snackbar
-                            .make(relativeLayout, "Comprueba tu conexión a Internet", Snackbar.LENGTH_LONG);
-                    snackbar.show();
-                }
-            }
-        });
-        
-```
-Como podeis observar cuando hagamos click en el boton llamaremos al metodo de crearNota, donde le pasaremos los campos del titulo y del contenido por parametro. Vamos a ver como seria el metodo crearNota
-
-```
-public void crearNota(String tit, String cont){
-        if (!EvernoteSession.getInstance().isLoggedIn()) {
-            return;
-        }
-        if(!tit.isEmpty() && !cont.isEmpty()){ //Si los campos no estan vacios creo la nota
-            EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
-
-            //Creamos la nota y le asignamos el titulo y el contenido
-            Note note = new Note();
-            note.setTitle(tit);
-            note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX);
-
-            noteStoreClient.createNoteAsync(note, new EvernoteCallback<Note>() {
-                @Override
-                public void onSuccess(Note result) {
-                    Toast.makeText(getApplicationContext(), "Nota creada con éxito", Toast.LENGTH_LONG).show();
-                    finish();
-                }
-
-                @Override
-                public void onException(Exception exception) {
-                    Log.e("ERROR", "Error al crear la nota", exception);
-                }
-            });
-        }else{
-            Snackbar snackbar = Snackbar
-                    .make(relativeLayout, "No puedes dejar los campos vacios", Snackbar.LENGTH_LONG);
-
-            snackbar.show();
-        }
-
-
-    }
-```
-Se puede observar es que tenemos que comprobar primero es que la sesion se haya iniciado. Una vez comprobado comprobaremos que los campos no esten vacios, si no estan vacios ya crearemos la nota y le asignaremos los campos de titulo y contenido que recibimos por parametro *note.setTitle(tit) y note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX); 
 
 ## Configuración SQLite
 
@@ -365,8 +252,118 @@ public class AdapterSQLite {
 }
 ```
 
+## Crear Nota
+
+### AddNote.java / activity_add_note.xml
+
+Una vez hecho lo anterior esta clase nos resultara bastante mas facil. Lo primero que debemos hacer es crearnos los campos donde introduciremos el nombre de la nota y el contenido mediante EditText, también tendremos que crear un boton para enviar la nota a Evernote
+
+**activity_add_note.xml**
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="bq.yournote.AddNote">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_add_note" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/ic_dialog_email" />
+
+</android.support.design.widget.CoordinatorLayout>
+```
+
+**AddNote.java**
+
+Iniciamos los EditText y el boton en el metodo onCreate, ademas comprobaremos la conexion a internet antes de poder crear una nota ya que si no tenemos conexion nos avisara de que no estamos conectados y no la creara, esto en un futuro se puede guardar en local hasta que vuelva la conexion y enviar a la API la nota.
+
+```
+FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        relativeLayout = (RelativeLayout) findViewById(R.id
+                .content_add_note);
+
+        connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //COMPROBAMOS LA CONEXION A INTERNET
+                if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                        connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+                            titulo = (EditText) findViewById(R.id.titulo);
+                            contenido = (EditText) findViewById(R.id.contenido);
+                            crearNota(titulo.getText().toString(), contenido.getText().toString());
+                }else{
+                    Snackbar snackbar = Snackbar
+                            .make(relativeLayout, "Comprueba tu conexión a Internet", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+            }
+        });
+        
+```
+Como podeis observar cuando hagamos click en el boton llamaremos al metodo de crearNota, donde le pasaremos los campos del titulo y del contenido por parametro. Vamos a ver como seria el metodo crearNota
+
+```
+public void crearNota(String tit, String cont){
+        if (!EvernoteSession.getInstance().isLoggedIn()) {
+            return;
+        }
+        if(!tit.isEmpty() && !cont.isEmpty()){ //Si los campos no estan vacios creo la nota
+            EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
+
+            //Creamos la nota y le asignamos el titulo y el contenido
+            Note note = new Note();
+            note.setTitle(tit);
+            note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX);
+
+            noteStoreClient.createNoteAsync(note, new EvernoteCallback<Note>() {
+                @Override
+                public void onSuccess(Note result) {
+                    Toast.makeText(getApplicationContext(), "Nota creada con éxito", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+
+                @Override
+                public void onException(Exception exception) {
+                    Log.e("ERROR", "Error al crear la nota", exception);
+                }
+            });
+        }else{
+            Snackbar snackbar = Snackbar
+                    .make(relativeLayout, "No puedes dejar los campos vacios", Snackbar.LENGTH_LONG);
+
+            snackbar.show();
+        }
 
 
+    }
+```
+Se puede observar es que tenemos que comprobar primero es que la sesion se haya iniciado. Una vez comprobado comprobaremos que los campos no esten vacios, si no estan vacios ya crearemos la nota y le asignaremos los campos de titulo y contenido que recibimos por parametro *note.setTitle(tit) y note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX); 
 
 
 
