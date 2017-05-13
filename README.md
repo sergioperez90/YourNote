@@ -12,7 +12,7 @@ Creación de una APP que permite ver y crear notas desde la API de Evernote. Las
     <li>targetSdkVersion 25</li>
 </ul>
 
-*Se ha testeado en varias versiones de android anteriores a la 7.0, incluida la 4.4 y 5.0.*
+*Se ha testeado en varias versiones de android anteriores a la 7.0, incluida la 4.4, 5.0 y 6.0.*
 
 ## Índice
 
