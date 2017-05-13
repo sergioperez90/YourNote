@@ -293,9 +293,7 @@ private void cargarNotas(){
                 int size = sqlAdapter.selectAll(ordenar).size();
                 for(int i = 0; i < size; i++){
                     tituloNotas.add(sqlAdapter.selectAll(ordenar).get(i).getTitulo());
-                    guidNotas.add(sqlAdapter.selectAll(ordenar).get(i).getGuid());
                     contNotas.add(sqlAdapter.selectAll(ordenar).get(i).getContenido());
-                    fechaNotas.add(sqlAdapter.selectAll(ordenar).get(i).getFecha());
                 }
             }
 
@@ -305,7 +303,9 @@ private void cargarNotas(){
         catch (EDAMSystemException e) {}
         catch (EDAMNotFoundException e){}
         catch (Exception e){
-            Log.e("Error", "Exception: " + e.getMessage());}
+            Log.e("Error", "Exception: " + e.getMessage());}
+
+    }
 ```
 
 
