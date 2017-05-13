@@ -350,7 +350,7 @@ Ademas en la toolbar crearemos un boton de actualizar y así cada vez que pulsem
 </menu>
 ```
 
-Y lo llamamos en el MainActivty, donde tendremos que controlar que vamos a actualizar.
+Y lo llamamos en el MainActivty, donde tendremos que controlar que vamos a actualizar y que haya conexion a internet.
 
 ```
 @Override
@@ -375,6 +375,75 @@ Y lo llamamos en el MainActivty, donde tendremos que controlar que vamos a actua
 
 
    }
+```
+
+Ahora vamos a crear un evento para que cuando pulsemos en un item de la lista nos lleve al detalle de la nota, como el contenido de la nota ya lo tenemos guardado en local desde que iniciamos o actualizamos el contenido se cargara practicamente al instante. Añadimos el siguiente evento en el metodo onCreate.
+
+```
+listaNotas.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+                Intent i = new Intent(getBaseContext(), DetailNote.class);
+                i.putExtra("titulo", listNotes.getTituloNotas(position));
+                i.putExtra("contenido", listNotes.getContNotas(position));
+                startActivity(i);
+            }
+
+});
+```
+
+Como podemos observar mediante los putExtra vamos a enviar el titulo y el contenido al siguiente activity, el contenido lo recojemos desde el adaptador que hemos creado. 
+
+### DetailNote.java / activity_detail_note.xml
+
+En esta clase visualizaremos el contenido de Evernote una vez pulsemos sobre el item del listView de notas. El contenido descargado desde la API de Evernote nos lo da en HTML por lo que tenemos que usar la funcion de EditText *setText(Html.fromHtml(contenido))*. Aunque lo primero que tenemos que hacer es recojer los datos mediante los getStringExtra.
+
+**DetailNote.java**
+
+```
+@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_detail_note);
+
+        //Recojemos el contenido
+        Intent i = getIntent();
+        String titulo = i.getStringExtra("titulo");
+        String contenido = i.getStringExtra("contenido");
+
+        //Cambiamos el titulo
+        getSupportActionBar().setTitle(titulo);
+
+        TextView contenidoHtml = (TextView) findViewById(R.id.contenido_html);
+        contenidoHtml.setText(Html.fromHtml(contenido)); //Añadimos el contenido al textView
+
+    }
+```
+
+**activity_detail_note.xml**
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_detail_note"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    tools:context="bq.yournote.DetailNote">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/contenido_html" />
+    </ScrollView>
+</RelativeLayout>
 ```
 
 ## Crear Notas
