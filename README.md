@@ -10,6 +10,7 @@ Creación de una APP que permite ver y crear notas desde la API de Evernote. Las
 <li><a href="#configuración-sqlite">Configuracion SQLite</a></li>
 <li><a href="#listar-notas">Listar Notas</a></li>
 <li><a href="#crear-notas">Crear Notas</a></li>
+<li><a href="#">Crear Notas con Canvas y lector OCR </a></li>
 </ul>
 
 
