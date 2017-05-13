@@ -1,6 +1,9 @@
 package bq.yournote.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -30,6 +33,7 @@ public class AddNote extends AppCompatActivity {
     private EditText titulo;
     private EditText contenido;
     private RelativeLayout relativeLayout;
+    private ConnectivityManager connectivityManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,14 +47,22 @@ public class AddNote extends AppCompatActivity {
         relativeLayout = (RelativeLayout) findViewById(R.id
                 .content_add_note);
 
+        connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                titulo = (EditText)findViewById(R.id.titulo);
-                contenido = (EditText)findViewById(R.id.contenido);
-                crearNota(titulo.getText().toString(), contenido.getText().toString());
+                //COMPROBAMOS LA CONEXION A INTERNET
+                if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                        connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+                            titulo = (EditText) findViewById(R.id.titulo);
+                            contenido = (EditText) findViewById(R.id.contenido);
+                            crearNota(titulo.getText().toString(), contenido.getText().toString());
+                }else{
+                    Snackbar snackbar = Snackbar
+                            .make(relativeLayout, "Comprueba tu conexión a Internet", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
             }
         });
     }

@@ -105,8 +105,6 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
                 for (Note note : noteList) {
                     Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
                     sqlAdapter.create(note.getGuid(), note.getTitle(), fullNote.getContent(), fullNote.getUpdateSequenceNum()); //Añadimos a la base de datos
-
-                    System.out.println("Nota: "+fullNote.getTitle() +" - "+fullNote.getUpdateSequenceNum());
                 }
             }
 
