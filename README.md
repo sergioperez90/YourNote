@@ -75,7 +75,7 @@ EvernoteSession.getInstance().authenticate(LoginActivity.this);
 
 Vamos a configurar SQLite para almacenar las notas en local y asi si no tenemos conexion a internet podemos seguir visualizandolas y a la hora de cargar el contenido de la nota sera mucho mas rapido, ya que no tendremos que estar haciendo constantes llamada a la API de Evernote.
 
-Lo primero que vamos a realizar es crear la clase **Nota** para poder crear el objeto de tipo Nota. La usaremos mas adelante.
+Lo primero que vamos a realizar es crear la clase **Nota** para poder crear el objeto de tipo Nota.
 
 ### Nota.java
 ```
@@ -251,6 +251,11 @@ public class AdapterSQLite {
 
 }
 ```
+## Listar Notas
+
+Esta posiblemente sea la parte mas larga de todas, pero con esto practicamente tendremos ya media APP realizada.
+
+
 
 ## Crear Nota
 
