@@ -73,11 +73,9 @@ EvernoteSession.getInstance().authenticate(LoginActivity.this);
 
 ## Crear Nota
 
-<img src="https://media.giphy.com/media/xhLuzsfDMw9ck/giphy.gif" />
-
 ### AddNote.java / activity_add_note.xml
 
-Una vez hecho lo anterior esta clase nos resultara bastante facil. Lo primero que debemos hacer es crearnos los campos donde introduciremos el nombre de la nota y el contenido mediante EditText, también tendremos que crear un boton para enviar la nota a Evernote
+Una vez hecho lo anterior esta clase nos resultara bastante mas facil. Lo primero que debemos hacer es crearnos los campos donde introduciremos el nombre de la nota y el contenido mediante EditText, también tendremos que crear un boton para enviar la nota a Evernote
 
 **activity_add_note.xml**
 
@@ -120,20 +118,29 @@ Una vez hecho lo anterior esta clase nos resultara bastante facil. Lo primero qu
 
 **AddNote.java**
 
-Iniciamos los EditText y el boton en el metodo onCreate
+Iniciamos los EditText y el boton en el metodo onCreate, ademas comprobaremos la conexion a internet antes de poder crear una nota ya que si no tenemos conexion no nos la podra crear, esto en un futuro se puede guardar en local hasta que vuelva la conexion y enviar a la API la nota.
+
 ```
 FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         relativeLayout = (RelativeLayout) findViewById(R.id
                 .content_add_note);
 
+        connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                titulo = (EditText)findViewById(R.id.titulo);
-                contenido = (EditText)findViewById(R.id.contenido);
-                crearNota(titulo.getText().toString(), contenido.getText().toString());
+                //COMPROBAMOS LA CONEXION A INTERNET
+                if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                        connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+                            titulo = (EditText) findViewById(R.id.titulo);
+                            contenido = (EditText) findViewById(R.id.contenido);
+                            crearNota(titulo.getText().toString(), contenido.getText().toString());
+                }else{
+                    Snackbar snackbar = Snackbar
+                            .make(relativeLayout, "Comprueba tu conexión a Internet", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
             }
         });
         
@@ -175,217 +182,5 @@ public void crearNota(String tit, String cont){
 
     }
 ```
-Se puede observar es que tenemos que comprobar primero es que la sesion se haya iniciado. Una vez comprobado comprobaremos que los campos no esten vacios, si no estan vacios ya crearemos la nota y le asignaremos los campos de titulo y contenido que recibimos por parametro *note.setTitle(tit) y note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX); Ademas podemos crear un Snackbar para que nos confirme que la nota se ha creado con exito.
-
-## Mostrar listado de notas
-
-<img src="https://media.giphy.com/media/zeXfNi8UYCCMU/giphy.gif" />
-
-Lo primero que vamos a realizar para mostrar el listado de notas es crear una clase asincrona que nos va a cargar los titulos de las notas en el listView que crearemos posteriormente en el mainActivity. 
-
-### ListNotes.java
-```
-public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
-
-    public ListNotes(Context context, ListView listaNotas, String ordenar){
-        this.context = context;
-        this.listaNotas = listaNotas;
-        tituloNotas = new ArrayList<String>();
-        guidNotas = new ArrayList<String>();
-        this.ordenar = ordenar;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        pDialog = new ProgressDialog(context);
-        pDialog.setMessage("Cargando Notas");
-        pDialog.setCancelable(false);
-        pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        pDialog.show();
-    }
-
-    @Override
-    protected ArrayAdapter<String> doInBackground(Void... arg0) {
-
-        cargarNotas();
-        adapter = new ArrayAdapter<String>(context, R.layout.lista_simple, R.id.lista_text, tituloNotas);
-        return adapter;
-    }
-
-    @Override
-    protected void onPostExecute(ArrayAdapter<String> result) {
-        super.onPostExecute(result);
-        listaNotas.setAdapter(result);
-        pDialog.dismiss();
-    }
-
-    //Metodo que va a cargar las notas del usuario
-    private void cargarNotas(){
-
-        if (!EvernoteSession.getInstance().isLoggedIn()) {
-            return;
-        }
-
-        NoteFilter filter = new NoteFilter();
-        //Ordenamos por fecha de creacion o edicion
-        if(ordenar.equalsIgnoreCase("UPDATED")){
-            filter.setOrder(NoteSortOrder.UPDATED.getValue());
-        }else if(ordenar.equalsIgnoreCase("TITLE")){ //Ordenamos por titulo ascendente de A a Z
-            filter.setOrder(NoteSortOrder.TITLE.getValue());
-            filter.setAscending(true);
-        }
-
-        NotesMetadataResultSpec spec = new NotesMetadataResultSpec();
-        spec.setIncludeTitle(true);
-
-        final EvernoteNoteStoreClient noteStoreClient = EvernoteSession.getInstance().getEvernoteClientFactory().getNoteStoreClient();
-        try {
-
-            NoteList notes = noteStoreClient.findNotes(filter, 0, 10);
-            List<Note> noteList = notes.getNotes();
-            for (Note note : noteList) {
-                /*Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
-                fullNote.getContent();
-                contNotas.add(fullNote.getContent()); //Cargamos el contenido de la nota*/
-                guidNotas.add(note.getGuid());
-                tituloNotas.add(note.getTitle()); //Cargamos el titulo de la nota
-            }
-        }
-        catch (EDAMUserException e) {}
-        catch (EDAMSystemException e) {}
-        catch (EDAMNotFoundException e){}
-        catch (Exception e){
-            Log.e("Error", "Exception: " + e.getMessage());}
-
-    }
-
-    public String getTituloNotas(int i){
-        return tituloNotas.get(i);
-    }
-
-    //Develovemos el guid para mas tarde cargar el contenido
-    public String getGuidNotas(int i){
-        return guidNotas.get(i);
-    }
-}
-```
-Como podemos observar el metodo **cargarNotas()** es el que realmente nos va a cargar las notas, lo primero que debemos hacer para poder acceder a ellas es crear una variable de tipo *EvernoteNoteStoreClient* con ella accederemos a todas las notas que tiene almacenadas el usuario en Evernote. Una vez hecho esto creamos una lista de notas *NoteList notes = noteStoreClient.findNotes(filter, 0, 100)* donde el filtro sera por que queremos ordenarlo y el 100 seran el numero maximo de notas que queremos cargar, en nuestro caso recorremos la lista de notas y ahora ya podemos ir almacenando los titulos de las notas en un array, los titulos se obtienen con el metodo *getTitle()*. Debemos crear un metodo que nos devuelva el guid de la nota, ya que luego nos hara falta para cargar el contenido de la nota.
-
-### MainActivity.java / content_main.xml
-
-#### content_main.xml
-
-Aqui lo que vamos a añadir es un listView para poder cargar el listado de las notas
-
-```
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content_main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="bq.yournote.MainActivity"
-    tools:showIn="@layout/app_bar_main">
-
-    <ListView
-        android:id="@+id/lista"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-</RelativeLayout>
-```
-
-#### MainActivity.java
-
-En el onCreate tendremos que inicializar el listView y es donde accederemos al detalle de la nota
-
-```
-listaNotas = (ListView)findViewById(R.id.lista);
-
-        //Cargamos el listado de las notas
-        listNotes = new ListNotes(this, listaNotas, "UPDATED");
-        listNotes.execute();
-
-        listaNotas.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                Intent i = new Intent(getBaseContext(), DetailNote.class);
-                i.putExtra("titulo", listNotes.getTituloNotas(position));
-                i.putExtra("guid", listNotes.getGuidNotas(position));
-                startActivity(i);
-
-            }
-
-        });
-```
-
-Llamamos al adaptador que nos va a cargar las notas *listNotes* le pasamos la lista y el tipo de orden, ademas podeis ver que dentro del metodo onItemClick tenemos que recojer el titulo de la nota para mostrarlo en la Toolbar y el guid para poder buscar el contenido completo de la nota, lo enviamos al otro activity mediante los intents.
- 
- 
-## Detalle de la nota
-
-Aqui lo que vamos a hacer es ver el detalle de la nota, el formato del contenido de la nota de Evernote nos lo dan en HTML, aunque como en el adaptador *ListCont* ya lo hemos contemplado aqui no tendremos que volver a realizar nada.
-
-### activity_detail_note.xml
-
-```
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_detail_note"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingTop="16dp"
-    tools:context="bq.yournote.DetailNote">
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/contenido_html" />
-    </ScrollView>
-</RelativeLayout>
-```
-
-Aquí simplemente tendremos que añadir un TextView para visualizar el contenido y tiene que estar dentro de un ScrollView por si el contenido es mas largo de lo esperado.
-
-### DetailNote.java
-
-Aqui lo primero que tendremos que hacer sera recojer lo del intent pasado del MainActivity, que seran el titulo y el guid.
-Ademas tendremos que llamar al controlador *ListCont* para que nos carge el contenido de forma asincrona.
-
-```
-public class DetailNote extends AppCompatActivity {
-    private ListCont listCont;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_note);
-
-        //Recojemos el contenido
-        Intent i = getIntent();
-        String titulo = i.getStringExtra("titulo");
-        String guid = i.getStringExtra("guid");
-
-        //Cambiamos el titulo
-        getSupportActionBar().setTitle(titulo);
-
-        TextView contenidoHtml = (TextView) findViewById(R.id.contenido_html);
-        listCont = new ListCont(this, contenidoHtml, guid);
-        listCont.execute();
-
-    }
-
-}
-```
+Se puede observar es que tenemos que comprobar primero es que la sesion se haya iniciado. Una vez comprobado comprobaremos que los campos no esten vacios, si no estan vacios ya crearemos la nota y le asignaremos los campos de titulo y contenido que recibimos por parametro *note.setTitle(tit) y note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX); 
 
