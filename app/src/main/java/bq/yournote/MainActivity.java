@@ -1,5 +1,6 @@
 package bq.yournote;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         //Cargamos el listado de las notas solo la primera vez llamamos al servidor
         if (settings.getBoolean("firstrun", true)) {
-            Log.d("Preferencias: ", "Mi primera vez");
+            //Log.d("Preferencias: ", "Mi primera vez");
             ordenar = "UPDATED";
             listNotes = new ListNotes(this, listaNotas, ordenar, "Primera_vez");
             listNotes.execute();
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity
             listNotes = new ListNotes(this, listaNotas, ordenar, "Otra_vez");
             listNotes.execute();
 
-            Log.d("Preferencias: ", "Mi segunda vez");
+            //Log.d("Preferencias: ", "Mi segunda vez");
 
         }
 
@@ -151,6 +152,8 @@ public class MainActivity extends AppCompatActivity
             listNotes.execute();
 
         } else if(id == R.id.nav_logout){
+            listNotes = new ListNotes(this, null, null, null);
+            listNotes.deleteNotas();
             EvernoteSession.getInstance().logOut();
             finish();
             Intent i = new Intent(getBaseContext(), LoginActivity.class);
@@ -191,6 +194,18 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                System.out.println("ENTRA");
+            }
+        }
+    }
+
+
+
 
 
 

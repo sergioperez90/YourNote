@@ -38,9 +38,9 @@ public class AdapterSQLite {
         db.close();
     }
 
-    public void delete(String guid){
+    public void delete(){
         SQLiteDatabase db = admin.getWritableDatabase();
-        db.delete("notas", "guid='"+guid+"'", null);
+        db.execSQL("delete from notas");
 
         db.close();
     }
@@ -53,12 +53,10 @@ public class AdapterSQLite {
             registro.put("contenido", contenido);
             registro.put("fecha", fecha);
 
-        if(!comprobar(guid)){
             db.insert("notas", null, registro);
-            Log.e("NOTA","insertada correctamente");
-        }else{
-            Log.e("NOTA","la nota ya existe");
-        }
+
+            //Log.e("NOTA","insertada correctamente");
+
 
         db.close();
 
@@ -99,5 +97,6 @@ public class AdapterSQLite {
         db.close();
         return notas;
     }
+
 
 }

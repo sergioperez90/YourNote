@@ -1,5 +1,6 @@
 package bq.yournote.Activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -86,7 +87,7 @@ public class AddNote extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Nota creada con éxito", Toast.LENGTH_LONG).show();
                     Intent i = new Intent(AddNote.this, MainActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(i);
+                    startActivityForResult(i, 1);
                 }
 
                 @Override
@@ -103,6 +104,7 @@ public class AddNote extends AppCompatActivity {
 
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -118,14 +120,12 @@ public class AddNote extends AppCompatActivity {
         if (id == R.id.new_paint) {
             Intent i = new Intent(AddNote.this, PaintActivity.class);
             startActivity(i);
-
         }
 
         return true;
 
 
     }
-
 
 
 }

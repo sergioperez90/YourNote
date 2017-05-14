@@ -95,6 +95,7 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
             if(pref.equalsIgnoreCase("Primera_vez") || pref.equalsIgnoreCase("Actualizar")) {
                 NoteList notes = noteStoreClient.findNotes(filter, 0, 100);
                 List<Note> noteList = notes.getNotes();
+                sqlAdapter.delete(); //Borramos primero las notas para volver a cargarlas
                 for (Note note : noteList) {
                     Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
                     sqlAdapter.create(note.getGuid(), note.getTitle(), fullNote.getContent(), fullNote.getUpdateSequenceNum()); //Añadimos a la base de datos
@@ -120,6 +121,9 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
 
     }
 
+    public void deleteNotas(){
+        sqlAdapter.delete();
+    }
 
     //Devolvemos el titulo de la nota para usarlo en el detalle de la nota
     public String getTituloNotas(int i){
