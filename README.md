@@ -84,6 +84,13 @@ Aqui lo que realizaremos sera llamar a EvernoteSession para que nos abra la pant
 EvernoteSession.getInstance().authenticate(LoginActivity.this);
 ```
 
+Ademas tendremos que guardar en nuestras preferencias que es la primera vez, para que las notas se actualicen, es decir, si cerramos sesión y volvemos a entrar las notas se tienen que actualizar.
+
+```
+settings.edit().putBoolean("firstrun", true).commit();
+```
+
+
 ## Configuración SQLite
 
 Vamos a configurar SQLite para almacenar las notas en local y asi si no tenemos conexion a internet podemos seguir visualizandolas y a la hora de cargar el contenido de la nota sera mucho mas rapido, ya que no tendremos que estar haciendo constantes llamada a la API de Evernote.
