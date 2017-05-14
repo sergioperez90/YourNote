@@ -42,6 +42,7 @@ public class Nota {
     public void setContenido(String contenido){
         this.contenido = contenido;
     }
+
     public void setFecha(int fecha){
         this.fecha = fecha;
     }

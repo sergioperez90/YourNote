@@ -1,15 +1,13 @@
 package bq.yournote.Adapters;
 
 import android.app.ProgressDialog;
-import android.content.ContentValues;
+
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.evernote.client.android.EvernoteSession;
 import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
@@ -22,7 +20,6 @@ import com.evernote.edam.notestore.NotesMetadataResultSpec;
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.NoteSortOrder;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,9 +37,7 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
     private ArrayAdapter<String> adapter;
     private ListView listaNotas;
     private ArrayList<String> tituloNotas;
-    private ArrayList<String> guidNotas;
     private ArrayList<String> contNotas;
-    private ArrayList<Integer> fechaNotas;
     private String ordenar;
     private AdapterSQLite sqlAdapter;
     private String pref;
@@ -51,9 +46,7 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
         this.context = context;
         this.listaNotas = listaNotas;
         tituloNotas = new ArrayList<String>();
-        guidNotas = new ArrayList<String>();
         contNotas = new ArrayList<String>();
-        fechaNotas = new ArrayList<Integer>();
         this.ordenar = ordenar;
         sqlAdapter = new AdapterSQLite(this.context);
         this.pref = pref;
@@ -113,9 +106,7 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
                 int size = sqlAdapter.selectAll(ordenar).size();
                 for(int i = 0; i < size; i++){
                     tituloNotas.add(sqlAdapter.selectAll(ordenar).get(i).getTitulo());
-                    guidNotas.add(sqlAdapter.selectAll(ordenar).get(i).getGuid());
                     contNotas.add(sqlAdapter.selectAll(ordenar).get(i).getContenido());
-                    fechaNotas.add(sqlAdapter.selectAll(ordenar).get(i).getFecha());
                 }
             }
 
@@ -133,11 +124,6 @@ public class ListNotes extends AsyncTask<Void, Void, ArrayAdapter<String>> {
     //Devolvemos el titulo de la nota para usarlo en el detalle de la nota
     public String getTituloNotas(int i){
         return tituloNotas.get(i);
-    }
-
-    //Develovemos el guid para mas tarde cargar el contenido
-    public String getGuidNotas(int i){
-        return guidNotas.get(i);
     }
 
     //Devolvemos el contenido
