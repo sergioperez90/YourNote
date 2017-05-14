@@ -209,9 +209,9 @@ public class AdapterSQLite {
         db.close();
     }
 
-    public void delete(String guid){
+    public void delete(){
         SQLiteDatabase db = admin.getWritableDatabase();
-        db.delete("notas", "guid='"+guid+"'", null);
+        db.execSQL("delete from notas");
 
         db.close();
     }
@@ -224,12 +224,10 @@ public class AdapterSQLite {
             registro.put("contenido", contenido);
             registro.put("fecha", fecha);
 
-        if(!comprobar(guid)){
             db.insert("notas", null, registro);
-            Log.e("NOTA","insertada correctamente");
-        }else{
-            Log.e("NOTA","la nota ya existe");
-        }
+
+            //Log.e("NOTA","insertada correctamente");
+
 
         db.close();
 
@@ -302,6 +300,7 @@ private void cargarNotas(){
             if(pref.equalsIgnoreCase("Primera_vez") || pref.equalsIgnoreCase("Actualizar")) {
                 NoteList notes = noteStoreClient.findNotes(filter, 0, 100);
                 List<Note> noteList = notes.getNotes();
+                sqlAdapter.delete(); //Borramos primero las notas para volver a cargarlas
                 for (Note note : noteList) {
                     Note fullNote = noteStoreClient.getNote(note.getGuid(), true, true, false, false);
                     sqlAdapter.create(note.getGuid(), note.getTitle(), fullNote.getContent(), fullNote.getUpdateSequenceNum()); //Añadimos a la base de datos
@@ -325,7 +324,7 @@ private void cargarNotas(){
         catch (Exception e){
             Log.e("Error", "Exception: " + e.getMessage());}
 
-    }
+ }
 ```
 
 ### MainActivity.java
@@ -578,11 +577,3 @@ public void crearNota(String tit, String cont){
     }
 ```
 Se puede observar es que tenemos que comprobar primero es que la sesion se haya iniciado. Una vez comprobado comprobaremos que los campos no esten vacios, si no estan vacios ya crearemos la nota y le asignaremos los campos de titulo y contenido que recibimos por parametro *note.setTitle(tit) y note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX); 
-
-
-
-
-
-
-
-
