@@ -586,7 +586,7 @@ Se puede observar es que tenemos que comprobar primero es que la sesion se haya 
 
 ## Crear Notas con Canvas y lector OCR 
 
-<img src="https://media.giphy.com/media/aLSazh7FynbSU/giphy.gif"
+<img src="https://media.giphy.com/media/aLSazh7FynbSU/giphy.gif"/>
 
 **El OCR he conseguido que funcione con una imagen, pero NO lo he conseguido a traves del bitmap.** *En el gif se puede ver como tendria que ser el resultado, aunque no lo este leyendo del canvas si lo esta leyendo de una imagen llamada sergio.jpg*
 
