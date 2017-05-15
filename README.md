@@ -471,6 +471,8 @@ En esta clase visualizaremos el contenido de Evernote una vez pulsemos sobre el 
 
 ## Crear Notas
 
+<img src="https://media.giphy.com/media/DDsS2qsbih4nC/giphy.gif" />
+
 ### AddNote.java / activity_add_note.xml
 
 Una vez hecho lo anterior esta clase nos resultara bastante mas facil. Lo primero que debemos hacer es crearnos los campos donde introduciremos el nombre de la nota y el contenido mediante EditText, también tendremos que crear un boton para enviar la nota a Evernote
