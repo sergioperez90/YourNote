@@ -52,13 +52,18 @@ public class PaintActivity extends AppCompatActivity {
             public void onClick(View view) {
 
 
+                //Comentar esta linea para probar OCR
+                Bitmap bitmap = canvasView.getmBitmap();
+
+                //Descomentar esta linea para probar OCR
+                //Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.sergio);
 
                 //Con el siguiente codigo podemos pasar de bitmap a texto
                 TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
                 if(!textRecognizer.isOperational())
                     Log.e("ERROR","Las depencias no estan disponibles");
                 else{
-                    Frame frame = new Frame.Builder().setBitmap(canvasView.getmBitmap()).build();
+                    Frame frame = new Frame.Builder().setBitmap(bitmap).build();
                     SparseArray<TextBlock> items = textRecognizer.detect(frame);
                     StringBuilder stringBuilder = new StringBuilder();
                     System.out.println("Tam: "+items.size());

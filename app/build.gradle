@@ -37,6 +37,4 @@ dependencies {
     //Libreria OCR
     compile 'com.google.android.gms:play-services-vision:9.8.0'
 
-    //Libreria OCR de microsoft
-    compile 'com.microsoft.projectoxford:vision:1.0.374'
 }
