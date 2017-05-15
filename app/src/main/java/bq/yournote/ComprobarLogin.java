@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import bq.yournote.Activities.LoginActivity;
+import bq.yournote.Activities.MainActivity;
 
 public class ComprobarLogin implements Application.ActivityLifecycleCallbacks {
 

@@ -1,8 +1,12 @@
 package bq.yournote.Activities;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -18,14 +22,17 @@ import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
 
+import org.w3c.dom.Text;
+
 import bq.yournote.Views.CanvasView;
 import bq.yournote.R;
 
 public class PaintActivity extends AppCompatActivity {
     private CanvasView canvasView;
     private Bitmap mBitmap;
-    private ImageView imageView;
     private TextView txtResult;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,11 +40,10 @@ public class PaintActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        canvasView = (CanvasView) findViewById(R.id.canvas);
-        imageView = (ImageView) findViewById(R.id.imageView);
-        txtResult = (TextView) findViewById(R.id.resultado);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        canvasView = (CanvasView) findViewById(R.id.canvas);
+        txtResult = (TextView) findViewById(R.id.resultado);
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -45,17 +51,14 @@ public class PaintActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                imageView.setImageBitmap(canvasView.getmBitmap());
-                //imageView.setImageResource(R.drawable.sergio);
 
-                Bitmap bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
 
                 //Con el siguiente codigo podemos pasar de bitmap a texto
                 TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
                 if(!textRecognizer.isOperational())
                     Log.e("ERROR","Las depencias no estan disponibles");
                 else{
-                    Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+                    Frame frame = new Frame.Builder().setBitmap(canvasView.getmBitmap()).build();
                     SparseArray<TextBlock> items = textRecognizer.detect(frame);
                     StringBuilder stringBuilder = new StringBuilder();
                     System.out.println("Tam: "+items.size());
@@ -66,7 +69,12 @@ public class PaintActivity extends AppCompatActivity {
                         stringBuilder.append("\n");
                     }
                     System.out.println("Resultado: "+stringBuilder.toString());
-                    txtResult.setText(stringBuilder.toString());
+                    if(items.size() == 0){
+                        txtResult.setText("Sin coincidencias");
+                    }else{
+                        txtResult.setText(stringBuilder.toString());
+                    }
+
                 }
 
             }
@@ -75,8 +83,5 @@ public class PaintActivity extends AppCompatActivity {
 
     }
 
-    public void clearCanvas(){
-        canvasView.clearCanvas();
-    }
 
 }

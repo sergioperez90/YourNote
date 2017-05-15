@@ -1,6 +1,5 @@
 package bq.yournote.Activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -25,7 +24,6 @@ import com.evernote.client.android.asyncclient.EvernoteCallback;
 import com.evernote.client.android.asyncclient.EvernoteNoteStoreClient;
 import com.evernote.edam.type.Note;
 
-import bq.yournote.MainActivity;
 import bq.yournote.R;
 
 

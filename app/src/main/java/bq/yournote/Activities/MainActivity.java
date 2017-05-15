@@ -1,4 +1,4 @@
-package bq.yournote;
+package bq.yournote.Activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -33,6 +33,7 @@ import bq.yournote.Activities.DetailNote;
 import bq.yournote.Activities.LoginActivity;
 import bq.yournote.Activities.PaintActivity;
 import bq.yournote.Adapters.ListNotes;
+import bq.yournote.R;
 
 
 public class MainActivity extends AppCompatActivity
