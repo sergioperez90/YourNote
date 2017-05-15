@@ -14,6 +14,10 @@ Creación de una APP que permite ver y crear notas desde la API de Evernote. Las
 
 *Se ha testeado en varias versiones de android anteriores a la 7.0, incluida la 4.4, 5.0 y 6.0.*
 
+### APK Firmada
+
+La APK firmada se encuentra dentro de la carpeta APK/your_note.apk
+
 ## Índice
 
 <ul>
