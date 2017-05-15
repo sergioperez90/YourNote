@@ -275,6 +275,8 @@ Podemos ordenar los resultados de la tabla segun lo que queramos, si queremos po
 
 ## Listar Notas
 
+<img src="https://media.giphy.com/media/GYcYs6h5uTTyw/giphy.gif" /> <img src="https://media.giphy.com/media/MWTfu86RpdNlu/giphy.gif" />
+
 ### ListNotes.java
 
 Esta posiblemente sea la parte mas larga de todas, pero con esto practicamente tendremos ya media APP realizada.
