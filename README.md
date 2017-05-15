@@ -271,6 +271,8 @@ public class AdapterSQLite {
 
 }
 ```
+Podemos ordenar los resultados de la tabla segun lo que queramos, si queremos por ordenar por titulo sera ASC y queremos ordenar por fecha de creacion o modificacion sera DESC
+
 ## Listar Notas
 
 ### ListNotes.java
