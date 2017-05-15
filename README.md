@@ -22,7 +22,7 @@ Creación de una APP que permite ver y crear notas desde la API de Evernote. Las
 <li><a href="#configuración-sqlite">Configuracion SQLite</a></li>
 <li><a href="#listar-notas">Listar Notas</a></li>
 <li><a href="#crear-notas">Crear Notas</a></li>
-<li><a href="#">Crear Notas con Canvas y lector OCR </a></li>
+<li><a href="#">Crear Notas con Canvas y lector OCR</a></li>
 </ul>
 
 
@@ -577,3 +577,215 @@ public void crearNota(String tit, String cont){
     }
 ```
 Se puede observar es que tenemos que comprobar primero es que la sesion se haya iniciado. Una vez comprobado comprobaremos que los campos no esten vacios, si no estan vacios ya crearemos la nota y le asignaremos los campos de titulo y contenido que recibimos por parametro *note.setTitle(tit) y note.setContent(EvernoteUtil.NOTE_PREFIX + cont + EvernoteUtil.NOTE_SUFFIX); 
+
+## Crear Notas con Canvas y lector OCR 
+
+**El OCR he conseguido que funcione con una imagen, pero NO lo he conseguido a traves del bitmap.**
+Lo que vamos a hacer es que mediante dibujado en Canvas podamos escribir nuestra nota con el dedo y lo pase a texto. Lo primero que vamos a realizar es cargar la siguiente libreria de OCR de Google en el gradle (app).
+
+```
+compile 'com.google.android.gms:play-services-vision:9.8.0'
+```
+
+### CanvasView.java
+
+Vamos a crear una vista de canvas para dibujar.
+
+```
+public class CanvasView extends View {
+
+    public int width;
+    public int height;
+    private Bitmap mBitmap;
+    private Canvas mCanvas;
+    private Path mPath;
+    private Paint mPaint;
+    private float mX, mY;
+    private static final float TOLERANCE = 5;
+    Context context;
+
+
+
+    public CanvasView (Context context, AttributeSet attrs){
+        super(context, attrs);
+        this.context = context;
+
+        mPath = new Path();
+
+        //Iniciamos el paint y sus atributos como color del pincel y el tamaño
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPaint.setColor(Color.BLACK);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setStrokeWidth(8f);
+
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh){
+        super.onSizeChanged(w, h, oldw, oldh);
+        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        mCanvas = new Canvas(mBitmap);
+
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        canvas.drawPath(mPath, mPaint);
+        //Pintamos sobre el canvas
+        mCanvas.drawPath(mPath,  mPaint);
+
+        //Pintamos el bitmap
+        canvas.drawBitmap(mBitmap, 0, 0, mPaint);
+    }
+
+    private void startTouch(float x, float y){
+        mPath.moveTo(x, y);
+        mX = x;
+        mY = y;
+    }
+
+    private void moveTouch(float x, float y){
+        float dx = Math.abs(x-mX);
+        float dy = Math.abs(y-mY);
+
+        if(dx >= TOLERANCE || dy >= TOLERANCE){
+            mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+            mX = x;
+            mY = y;
+        }
+
+    }
+
+    public void clearCanvas(){
+        mPath.reset();
+        invalidate();
+    }
+
+    public Bitmap getmBitmap(){
+        return mBitmap;
+    }
+
+    private void upTouch(){
+        mPath.lineTo(mX, mY);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                startTouch(x, y);
+                invalidate();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                moveTouch(x, y);
+                invalidate();
+                break;
+            case MotionEvent.ACTION_UP:
+                upTouch();
+                invalidate();
+                break;
+        }
+
+        return true;
+    }
+}
+```
+
+### activity_paint.xml
+
+En el XML cargamos la vista del canvas y añadimos un textView donde mostraremos el resultado
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_paint"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="bq.yournote.Activities.PaintActivity"
+    tools:showIn="@layout/activity_paint">
+
+    <bq.yournote.Views.CanvasView
+        android:id="@+id/canvas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="16dp"
+        android:id="@+id/resultado" />
+
+</RelativeLayout>
+```
+
+### PaintActivity.java
+
+En este clase lo que vamos a hacer es leer crear el metodo que nos va a leer un bitmap en nuestro caso lo que dibujamos y nos lo va a convertir en OCR.
+
+```
+public class PaintActivity extends AppCompatActivity {
+    private CanvasView canvasView;
+    private Bitmap mBitmap;
+    private TextView txtResult;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_paint);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        canvasView = (CanvasView) findViewById(R.id.canvas);
+        txtResult = (TextView) findViewById(R.id.resultado);
+
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Con el siguiente codigo podemos pasar de bitmap a texto
+                TextRecognizer textRecognizer = new TextRecognizer.Builder(getApplicationContext()).build();
+                if(!textRecognizer.isOperational())
+                    Log.e("ERROR","Las depencias no estan disponibles");
+                else{
+                    Frame frame = new Frame.Builder().setBitmap(canvasView.getmBitmap()).build();
+                    SparseArray<TextBlock> items = textRecognizer.detect(frame);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    System.out.println("Tam: "+items.size());
+                    for(int i=0;i<items.size();++i)
+                    {
+                        TextBlock item = items.valueAt(i);
+                        stringBuilder.append(item.getValue());
+                        stringBuilder.append("\n");
+                    }
+                    System.out.println("Resultado: "+stringBuilder.toString());
+                    if(items.size() == 0){
+                        txtResult.setText("Sin coincidencias");
+                    }else{
+                        txtResult.setText(stringBuilder.toString());
+                    }
+                }
+            }
+        });
+    }
+    
+}
+
+```
+
+
