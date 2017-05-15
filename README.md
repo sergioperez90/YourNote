@@ -581,6 +581,7 @@ Se puede observar es que tenemos que comprobar primero es que la sesion se haya 
 ## Crear Notas con Canvas y lector OCR 
 
 **El OCR he conseguido que funcione con una imagen, pero NO lo he conseguido a traves del bitmap.**
+
 Lo que vamos a hacer es que mediante dibujado en Canvas podamos escribir nuestra nota con el dedo y lo pase a texto. Lo primero que vamos a realizar es cargar la siguiente libreria de OCR de Google en el gradle (app).
 
 ```
